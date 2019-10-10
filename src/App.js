@@ -1,26 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import MainPage from './pages/MainPage'
+import PageNotFound from './pages/PageNotFound'
+import GameList from './pages/GameList'
+import Game from './pages/Game'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import { BrowserRouter as Router, 
+  Route, 
+  Switch, 
+  Link, 
+  Redirect
+ } from 'react-router-dom'
 
-export default App;
+ class App extends Component {
+   constructor(props) {
+     super(props);
+     this.state = {  }
+   }
+   render() { 
+     return (  
+       <Router>
+       <Switch>
+           <Route exact path="/" component={ MainPage }/>
+           <Route exact path="/pageNotFound" component={ PageNotFound } />
+           <Route exact path="/gameList" component={ GameList } />
+           <Route exact path="/game/:id" component={ Game }/>
+           <Redirect to="/pageNotFound" />
+         </Switch>
+       </Router>
+     );
+   }
+ }
+  
+ export default App;
