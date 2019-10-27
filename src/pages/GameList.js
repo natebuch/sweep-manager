@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import Game from '../pages/Game'
 import { Table } from 'react-bootstrap'
 import { Container } from 'react-bootstrap'
+import Badge from 'react-bootstrap/Badge'
+import moment from 'moment';
+import gameObject from './gameObject'
+import Navbar from 'react-bootstrap/Navbar'
 
 
 
@@ -10,52 +13,17 @@ class GameList extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      games: [
-        {
-          status: 'Active',
-          id: 1, 
-          client: 'BudLight',
-          team: 'Browns',
-          type: 'Slate',
-          start: '2019-10-10',
-          end: '2019-10-10'
-        },
-        {
-          status: 'Pending',
-          id: 2, 
-          client: 'BudLight',
-          team: 'Patriots',
-          type: 'Slate',
-          start: '2019-10-10',
-          end: '2019-10-10'
-        },{
-          status: 'Complete',
-          id: 3, 
-          client: 'BudLight',
-          team: 'Browns',
-          type: 'Slate',
-          start: '2019-10-10',
-          end: '2019-10-10'
-        }
-      ]
+      games: gameObject
     }
   }
 
-
-
-  
-    
-  
-
-
-  
-
-  render() { 
-    
-    let gameList  = this.state.games.map((game) => {
+  returnGameList = () => {
+    console.log(this.state.games)
+    const { games } = this.state
+    return games.map((game) => {
       return (
         <tr key={ game.id}>
-          <td>{ game.status }</td>
+          <td>{ this.gameStatus(game) }</td>
           <td>
             <Link to={{pathname: `/game/${ game.id }`}}>
                 { game.id }
@@ -69,49 +37,59 @@ class GameList extends Component {
         </tr>
       )
     })
+  }
 
+  gameStatus = (game) => {
+    if (game && game.status === 'Pending') {
+        return (
+          <Badge variant="primary"> {game.status} </Badge>
+        )
+    } else if (game && game.status === 'Active') {
+      const end = moment(game.end)
+        if ( moment().isBefore(end) ) {
+          return (
+            <Badge variant="success"> {game.status} </Badge>
+          )
+        } else if ( moment().isAfter(end) && moment().isBefore(end.add(4, 'hours'))) {
+          return (
+            <Badge variant="warning"> {game.status} </Badge>
+          )
+        }  else {
+          return (
+            <Badge variant="danger"> {game.status} </Badge>
+          )
+        }
+    } else if (game && game.status === 'Complete') {
+        return (
+          <Badge variant="dark"> {game.status} </Badge>
+        )
+      }
+    }
 
-  return (  
-    <div>
-      <h1>List of Games</h1>
-      <Container>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Game Status</th>
-            <th>Game ID</th>
-            <th>Client</th>
-            <th>Game Name</th>
-            <th>Game Type</th>
-            <th>Game Start Time</th>
-            <th>Game End Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          { gameList }
-        </tbody>
-      
-      
-      </Table>
-      </Container>
-          
-          {/* <tbody>
-          { this.state.games.map((game => {
-            return ( 
+  render() { 
+    return (  
+      <div>
+       <Navbar bg="dark" variant="dark">
+          <Navbar.Brand href="#home">Navbar</Navbar.Brand>
+        </Navbar>
+        <Container>
+          <Table striped bordered hover>
+            <thead>
               <tr>
-              <td>
-                <Link to={{
-                  pathname: `/game/${ game.id }`,
-                }}>
-                Game {game.homeTeam} vs {game.awayTeam}
-                </Link>
-                </td>
+                <th>Game Status</th>
+                <th>Game ID</th>
+                <th>Client</th>
+                <th>Game Name</th>
+                <th>Game Type</th>
+                <th>Game Start Time</th>
+                <th>Game End Time</th>
               </tr>
-            ) 
-            })
-          )}
-          </tbody> */}
-        
+            </thead>
+            <tbody>
+              { this.returnGameList() }
+            </tbody>
+          </Table>
+        </Container>
       </div>
     );
   }
