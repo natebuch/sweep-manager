@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import ListGroup from 'react-bootstrap/ListGroup'
 import { Table } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
+import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
 
 
 
@@ -29,9 +32,6 @@ class Questions extends Component {
     console.log(this.props)
       return (
         <div>
-        <h3>
-          Game Questions
-        </h3>
           <Table striped bordered hover>
             <thead>
               <tr>

@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Table } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
+import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
 
 class Winners extends Component {
   constructor(props) {
@@ -75,10 +78,7 @@ class Winners extends Component {
     console.log(this.props.playerList)
       return (
         <div>
-        <h3>
-            Current Winner
-          </h3>
-         <Table striped bordered hover>
+          <Table striped bordered hover>
             <thead>
               <tr>
                 <th>Player ID</th>
@@ -92,7 +92,7 @@ class Winners extends Component {
             </tbody>
           </Table> 
           <h3>
-            Previous Winners
+           Previous Game Winners
           </h3>
           <Table striped bordered hover>
           <thead>
