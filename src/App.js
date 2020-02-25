@@ -22,7 +22,7 @@ import { BrowserRouter as Router,
        <Switch>
            <Route exact path="/" component={ MainPage }/>
            <Route exact path="/pageNotFound" component={ PageNotFound } />
-           <Route exact path="/gameList" component={ GameList } />
+           <Route exact path="/games" component={ GameList } />
            <Route exact path="/game/:id" component={ Game }/>
            <Redirect to="/pageNotFound" />
          </Switch>

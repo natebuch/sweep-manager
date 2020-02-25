@@ -13,14 +13,22 @@ class GameList extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      games: gameObject
+      games: null
     }
+  }
+
+  componentDidMount() {
+    fetch("http://localhost:3000/games.json").then((response) => {
+      return response.json()
+    }).then((data) => {
+      this.setState({ games: data.games})
+    })
   }
 
   returnGameList = () => {
     console.log(this.state.games)
     const { games } = this.state
-    return games.map((game) => {
+    return games && games.map((game) => {
       return (
         <tr key={ game.id}>
           <td>{ this.gameStatus(game) }</td>
@@ -29,7 +37,7 @@ class GameList extends Component {
                 { game.id }
             </Link>  
           </td>
-          <td>{ game.client }</td>
+          <td>{ game.client.name }</td>
           <td>{ game.team }</td>
           <td>{ game.type }</td>
           <td>{ game.start }</td>
