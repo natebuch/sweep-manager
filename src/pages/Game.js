@@ -22,47 +22,50 @@ class Game extends Component {
     this.state = { 
       game: null,
       players: null,
-      games: gameObject,
+      game: null,
       show: false
     }
   }
         
 
-  componentDidMount = () => {  
-    let result = this.state.games.filter(game => game.id == this.props.match.params.id )
-    this.setState({ game: result[0]})
-    // console.log(this.state.game)
+
+
+  componentDidMount() {
+    fetch(`http://localhost:3000/games/${ this.props.match.params.id }`).then((response) => {
+      return response.json()
+    }).then((data) => {
+      this.setState({ game: data.game})
+    })
   }
    
 
 //  why is this returning null without the game &&
-  gameStatus = () => {
-    const { game } = this.state
-    if (game && game.status === 'Pending') {
+gameStatus = (game) => {
+  if (game && game.status.description === 'Pending') {
+      return (
+        <Badge variant="primary"> {game.status.description} </Badge>
+      )
+  } else if (game && game.status.description === 'In Progress') {
+    const end = moment(game.end)
+      if ( moment().isBefore(end) ) {
         return (
-          <Badge variant="primary"> {game.status} </Badge>
+          <Badge variant="success"> {game.status.description} </Badge>
         )
-    } else if (game && game.status === 'Active') {
-      const end = moment(game.end)
-        if ( moment().isBefore(end) ) {
-          return (
-            <Badge variant="success"> {game.status} </Badge>
-          )
-        } else if ( moment().isAfter(end) && moment().isBefore(end.add(4, 'hours'))) {
-          return (
-            <Badge variant="warning"> {game.status} </Badge>
-          )
-        }  else {
-          return (
-            <Badge variant="danger"> {game.status} </Badge>
-          )
-        }
-    } else if (game && game.status === 'Complete') {
+      } else if ( moment().isAfter(end) && moment().isBefore(end.add(4, 'hours'))) {
         return (
-          <Badge variant="dark"> {game.status} </Badge>
+          <Badge variant="warning"> {game.status.description} </Badge>
+        )
+      }  else {
+        return (
+          <Badge variant="danger"> {game.status.description} </Badge>
         )
       }
-    } 
+  } else if (game && game.status.description === 'Closed Out') {
+      return (
+        <Badge variant="dark"> {game.status.description} </Badge>
+      )
+    }
+  }
 
     // showModal = () => {
     //   this.setState(prevState => { 
@@ -85,6 +88,7 @@ class Game extends Component {
    
   render() {
     const { game } = this.state;  
+    console.log(this.state.game)
 
     console.log(this.state.show)
     
@@ -108,9 +112,6 @@ class Game extends Component {
               </h1>
               <Alert className="d-flex justify-content-center" variant={'success'}>
                 Start: { game && game.start}
-              </Alert>
-              <Alert className="d-flex justify-content-center" variant={'danger'}>
-                End: { game && game.end}
               </Alert>
               <h1 className="d-flex justify-content-center">
               { this.gameStatus() }
@@ -148,9 +149,9 @@ class Game extends Component {
                 </h3>
               </Col>
               <Col md={2}>
-               {/* <Button variant="primary" size="sm" onClick={ this.showModal }>
+               <Button variant="primary" size="sm" onClick={ this.showModal }>
                   Edit { game && <WinnerEdit show={ this.state.show } hideModalFunc={ this.hideModal } gameId={this.state.game.id} />}
-                </Button> */}
+                </Button>
               </Col>
             </Row>
             { game && <Winners playerList={ this.state.game.players }/> }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Table } from 'react-bootstrap'
 import { Container } from 'react-bootstrap'
+import { Jumbotron } from 'react-bootstrap'
 import Badge from 'react-bootstrap/Badge'
 import moment from 'moment';
 import gameObject from './gameObject'
@@ -31,50 +32,50 @@ class GameList extends Component {
     return games && games.map((game) => {
       return (
         <tr key={ game.id}>
-          <td>{ this.gameStatus(game) }</td>
           <td>
             <Link to={{pathname: `/game/${ game.id }`}}>
                 { game.id }
             </Link>  
           </td>
           <td>{ game.client.name }</td>
-          <td>{ game.team }</td>
-          <td>{ game.type }</td>
-          <td>{ game.start }</td>
-          <td>{ game.end }</td>
+          <td>{ this.gameStatus(game) }</td>
+          <td>{ game.description }</td>
+          <td>{ game.game_type.description }</td>
+          <td>{ moment(game.start).format('MMMM Do YYYY, h:mm:ss a')}</td>
         </tr>
       )
     })
   }
 
   gameStatus = (game) => {
-    if (game && game.status === 'Pending') {
+    if (game && game.status.description === 'Pending') {
         return (
-          <Badge variant="primary"> {game.status} </Badge>
+          <Badge variant="primary"> {game.status.description} </Badge>
         )
-    } else if (game && game.status === 'Active') {
+    } else if (game && game.status.description === 'In Progress') {
       const end = moment(game.end)
         if ( moment().isBefore(end) ) {
           return (
-            <Badge variant="success"> {game.status} </Badge>
+            <Badge variant="success"> {game.status.description} </Badge>
           )
         } else if ( moment().isAfter(end) && moment().isBefore(end.add(4, 'hours'))) {
           return (
-            <Badge variant="warning"> {game.status} </Badge>
+            <Badge variant="warning"> {game.status.description} </Badge>
           )
         }  else {
           return (
-            <Badge variant="danger"> {game.status} </Badge>
+            <Badge variant="danger"> {game.status.description} </Badge>
           )
         }
-    } else if (game && game.status === 'Complete') {
+    } else if (game && game.status.description === 'Closed Out') {
         return (
-          <Badge variant="dark"> {game.status} </Badge>
+          <Badge variant="dark"> {game.status.description} </Badge>
         )
       }
     }
 
   render() { 
+    console.log(this.state)
     return (  
       <div>
        <Navbar bg="dark" variant="dark">
@@ -84,13 +85,12 @@ class GameList extends Component {
           <Table striped bordered hover>
             <thead>
               <tr>
-                <th>Game Status</th>
                 <th>Game ID</th>
                 <th>Client</th>
+                <th>Game Status</th>
                 <th>Game Name</th>
                 <th>Game Type</th>
                 <th>Game Start Time</th>
-                <th>Game End Time</th>
               </tr>
             </thead>
             <tbody>
