@@ -108,18 +108,18 @@ gameStatus = (game) => {
                 </Col>
               </Row>
               <h1 className="d-flex justify-content-center">
-                { game && game.team }
+                { game && game.team_id }
               </h1>
               <Alert className="d-flex justify-content-center" variant={'success'}>
                 Start: { game && game.start}
               </Alert>
               <h1 className="d-flex justify-content-center">
               { this.gameStatus() }
-                <Badge variant={game && game.client  === "BudLight" ? 'info' : 'danger' }>
+                <Badge variant={game && game.client.name  === "NFL" ? 'info' : 'danger' }>
                   { game && game.client }
                 </Badge>
                 <Badge variant={ 'dark' }>
-                  { game && game.type }
+                  { game && game.game_type }
                 </Badge>
               </h1>
             </Jumbotron>
