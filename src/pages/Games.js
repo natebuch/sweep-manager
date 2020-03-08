@@ -10,7 +10,7 @@ import Navbar from 'react-bootstrap/Navbar'
 
 
 
-class GameList extends Component {
+class Games extends Component {
   constructor(props) {
     super(props);
     this.state = { 
@@ -103,4 +103,4 @@ class GameList extends Component {
   }
 }
  
-export default GameList;
+export default Games;

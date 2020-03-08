@@ -22,7 +22,6 @@ class Game extends Component {
     this.state = { 
       game: null,
       players: null,
-      game: null,
       show: false
     }
   }
@@ -34,7 +33,8 @@ class Game extends Component {
     fetch(`http://localhost:3000/games/${ this.props.match.params.id }`).then((response) => {
       return response.json()
     }).then((data) => {
-      this.setState({ game: data.game})
+      console.log(data.game.client)
+      this.setState({ game: data})
     })
   }
    
@@ -89,9 +89,6 @@ gameStatus = (game) => {
   render() {
     const { game } = this.state;  
     console.log(this.state.game)
-
-    console.log(this.state.show)
-    
     return (
       <div>
         <Navbar bg="dark" variant="dark">

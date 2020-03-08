@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import MainPage from './pages/MainPage'
 import PageNotFound from './pages/PageNotFound'
-import GameList from './pages/GameList'
+import Games from './pages/Games'
 import Game from './pages/Game'
 
 import { BrowserRouter as Router, 
@@ -22,7 +22,7 @@ import { BrowserRouter as Router,
        <Switch>
            <Route exact path="/" component={ MainPage }/>
            <Route exact path="/pageNotFound" component={ PageNotFound } />
-           <Route exact path="/games" component={ GameList } />
+           <Route exact path="/games" component={ Games } />
            <Route exact path="/game/:id" component={ Game }/>
            <Redirect to="/pageNotFound" />
          </Switch>

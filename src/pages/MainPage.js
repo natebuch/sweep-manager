@@ -6,7 +6,7 @@ const MainPage = () => {
   return (
     <div>
       <h1>Sweep Manager</h1>
-      <Link to='/gameList'> Go to Games</Link>
+      <Link to='/games'> Go to Games</Link>
     </div>
   )
 }
