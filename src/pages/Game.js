@@ -33,7 +33,6 @@ class Game extends Component {
     fetch(`http://localhost:3000/games/${ this.props.match.params.id }`).then((response) => {
       return response.json()
     }).then((data) => {
-      console.log(data.game.client)
       this.setState({ game: data})
     })
   }
@@ -88,7 +87,6 @@ gameStatus = (game) => {
    
   render() {
     const { game } = this.state;  
-    console.log(this.state.game)
     return (
       <div>
         <Navbar bg="dark" variant="dark">
@@ -111,8 +109,8 @@ gameStatus = (game) => {
                 Start: { game && game.start}
               </Alert>
               <h1 className="d-flex justify-content-center">
-              { this.gameStatus() }
-                <Badge variant={game && game.client.name  === "NFL" ? 'info' : 'danger' }>
+                { this.gameStatus() }
+                <Badge variant={game && game.client  === "NFL" ? 'info' : 'danger' }>
                   { game && game.client }
                 </Badge>
                 <Badge variant={ 'dark' }>
