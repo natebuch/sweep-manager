@@ -27,7 +27,6 @@ class Games extends Component {
   }
 
   returnGameList = () => {
-    console.log(this.state.games)
     const { games } = this.state
     return games && games.map((game) => {
       return (
@@ -75,7 +74,6 @@ class Games extends Component {
     }
 
   render() { 
-    console.log(this.state)
     return (  
       <div>
        <Navbar bg="dark" variant="dark">

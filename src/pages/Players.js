@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Table } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
+import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
 
 
 
@@ -7,38 +10,29 @@ class Players extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      players: [],
     }
   }
 
   
-  loadPlayers = () => {
-    const { playerList } = this.props
-
+  loadPlayerList = () => {
+    const  { playerList } = this.props
     return playerList.map(player => {
+      console.log(player)
       return (
         <tr>
-          <td>
-            { player.id}
-          </td>
-          <td>
-            { player.firstName}
-          </td>
-          <td>
-            { player.lastName}
-          </td>
-          <td>
-            { player.address}
-          </td>
+          <td>{ player.id }</td>
+          <td>{ player.first_name }</td>
+          <td>{ player.last_name }</td>
+          <td>{ player.address }</td>
         </tr>
-      )   
+      )  
     })
   }
   
-  render() { 
+  render() {
     console.log(this.props)
       return (
-        <div>
+      <div>
         <h3>
           Player List
         </h3>
@@ -52,7 +46,7 @@ class Players extends Component {
               </tr>
             </thead>
             <tbody>
-              { this.loadPlayers() }
+              { this.loadPlayerList() }
             </tbody>
           </Table>
         </div>        

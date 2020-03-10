@@ -26,15 +26,13 @@ class Game extends Component {
     }
   }
         
-
-
-
   componentDidMount() {
-    fetch(`http://localhost:3000/games/${ this.props.match.params.id }`).then((response) => {
+    fetch(`http://localhost:3000/games/${ this.props.match.params.id }`) .then((response) => {
       return response.json()
-    }).then((data) => {
-      this.setState({ game: data})
     })
+    .then((data) => {
+      this.setState({game: data.game});
+    });
   }
    
 
@@ -86,7 +84,8 @@ gameStatus = (game) => {
     }
    
   render() {
-    const { game } = this.state;  
+    const { game } = this.state
+    console.log(game && game.players)
     return (
       <div>
         <Navbar bg="dark" variant="dark">
@@ -103,18 +102,18 @@ gameStatus = (game) => {
                 </Col>
               </Row>
               <h1 className="d-flex justify-content-center">
-                { game && game.team_id }
+                { game && game.description }
               </h1>
               <Alert className="d-flex justify-content-center" variant={'success'}>
-                Start: { game && game.start}
+                Start: { game && moment(game.start).format('MMMM Do YYYY, h:mm:ss a')}
               </Alert>
               <h1 className="d-flex justify-content-center">
                 { this.gameStatus() }
-                <Badge variant={game && game.client  === "NFL" ? 'info' : 'danger' }>
-                  { game && game.client }
+                <Badge variant={game && game.client.name  === "NFL" ? 'info' : 'danger' }>
+                  { game && game.client.name }
                 </Badge>
                 <Badge variant={ 'dark' }>
-                  { game && game.game_type }
+                  { game && game.game_type.description }
                 </Badge>
               </h1>
             </Jumbotron>
@@ -130,11 +129,11 @@ gameStatus = (game) => {
               </Col>
               <Col md={2}>
                 <Button variant="primary" size="sm" onClick={ this.showModal }>
-                  Edit { game && <QuestionEdit show={ this.state.show } hideModalFunc={ this.hideModal } gameId={this.state.game.id} />}
+                  Edit { game && <QuestionEdit show={ this.state.show } hideModalFunc={ this.hideModal } gameId={game.id} />}
                 </Button>
               </Col>
             </Row>
-            { game && <Questions qlist={ this.state.game.questions }/> }
+            { game && <Questions qlist={ game && game.questions } /> }
           </Col>
           <Col md={{ span: 4, offset: 2 }}>
             <Row >
@@ -145,16 +144,16 @@ gameStatus = (game) => {
               </Col>
               <Col md={2}>
                <Button variant="primary" size="sm" onClick={ this.showModal }>
-                  Edit { game && <WinnerEdit show={ this.state.show } hideModalFunc={ this.hideModal } gameId={this.state.game.id} />}
+                  Edit { game && <WinnerEdit show={ this.state.show } hideModalFunc={ this.hideModal } gameId={game.id} />}
                 </Button>
               </Col>
             </Row>
-            { game && <Winners playerList={ this.state.game.players }/> }
+            { game && <Winners winnerList={ game.cards }/> }
           </Col>
         </Row>
         <Row>
           <Col md={{ span: 10, offset: 1}}>
-            { game && <Players playerList={ this.state.game.players} /> }
+            { game && <Players playerList={ game && game.players } /> }
           </Col>
         </Row>
       </div>

@@ -8,34 +8,33 @@ class Winners extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      winners: [],
     }
   }
 
   loadWinners = () => {
-    const { playerList } = this.props
-    const winnerList = []
+    const { winnerList } = this.props
+    const winnerListing = []
     
-    playerList.map(winner => { 
-      if (winner.winner ) {
-        winnerList.push(winner)
+    winnerList.map(winner => { 
+      if (winner.sweep === 1 ) {
+        winnerListing.push(winner)
       }
     })
 
-    return winnerList.map(winner => {   
+    return winnerListing.map(winner => {   
       return (
         <tr>
           <td>
-            { winner.id}
+            { winner.winner_id}
           </td>
           <td>
-            { winner.firstName}
+            { winner.winner_first_name}
           </td>
           <td>
-            { winner.lastName}
+            { winner.winner_last_name}
           </td>
           <td>
-            { winner.address}
+            { winner.winner_address}
           </td>
         </tr>
       )   
@@ -43,11 +42,11 @@ class Winners extends Component {
   }
 
   loadPrevWinners = () => {
-    const { playerList } = this.props
+    const { winnerList } = this.props
     const prevWinnerList = []
     
-    playerList.map(prevWinner => { 
-      if (prevWinner.prior_winner ) {
+    winnerList.map(prevWinner => { 
+      if (prevWinner.sweep === 0 ) {
         prevWinnerList.push(prevWinner)
       }
     })
@@ -56,13 +55,13 @@ class Winners extends Component {
       return (
         <tr>
           <td>
-            { winner.id}
+            { winner.winner_id}
           </td>
           <td>
-            { winner.firstName}
+            { winner.winner_first_name}
           </td>
           <td>
-            { winner.lastName}
+            { winner.winner_last_name}
           </td>
           <td>
             { winner.address}
@@ -75,7 +74,8 @@ class Winners extends Component {
   
 
   render() { 
-    console.log(this.props.playerList)
+    const { winnerList } = this.props
+    console.log( winnerList)
       return (
         <div>
           <Table striped bordered hover>

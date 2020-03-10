@@ -11,18 +11,18 @@ class Questions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      questions: [],
     }
   }
 
   
   loadQuestions = () => {
-    const { qlist } = this.props
+    const { qlist }  = this.props
     return qlist.map(question => {
+      console.log(question)
       return (
         <tr>
-          <td>{ question.question }</td>
-          <td>{ question.answer }</td>
+          <td>{ question.description }</td>
+          <td>{ question.status }</td>
         </tr>
       )
     })
