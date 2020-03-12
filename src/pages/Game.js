@@ -21,8 +21,14 @@ class Game extends Component {
     super(props);
     this.state = { 
       game: null,
+      gameDetails: null,
+      questions: null,
+      winners: null,
       players: null,
-      show: false
+      show: false,
+      showQuestionEdit: false,
+      showGameEdit: false,
+      showWinnerEdit: false
     }
   }
         
@@ -31,7 +37,12 @@ class Game extends Component {
       return response.json()
     })
     .then((data) => {
-      this.setState({game: data.game});
+      this.setState({
+        game: data.game,
+        questions: data.game.questions,
+        winners: data.game.cards.winners,
+        players: data.game.players
+      });
     });
   }
    
@@ -72,14 +83,36 @@ gameStatus = (game) => {
     //   })
     // }
 
-    showModal = () => {
-      this.setState({ show: true})
+    showQuestionModal = () => {
+      this.setState({ showQuestionEdit: true})
     }
 
-    hideModal = () => {
+    hideQuestionModal = () => {
       console.log('hide modal')
       setTimeout(() => {
-        this.setState({ show: false })
+        this.setState({ showQuestionEdit: false })
+      }, 100)
+    }
+
+    showGameModal = () => {
+      this.setState({ showGameEdit: true})
+    }
+
+    hideGameModal = () => {
+      console.log('hide modal')
+      setTimeout(() => {
+        this.setState({ showGameEdit: false })
+      }, 100)
+    }
+
+    showWinnerModal = () => {
+      this.setState({ showWinnerEdit: true})
+    }
+
+    hideWinnerModal = () => {
+      console.log('hide modal')
+      setTimeout(() => {
+        this.setState({ showWinnerEdit: false })
       }, 100)
     }
    
@@ -96,9 +129,9 @@ gameStatus = (game) => {
             <Jumbotron style={{ marginTop: 10, paddingTop: 10, paddingRight: 20 }}>
               <Row>
                 <Col md={{ span: 1, offset: 11}}>
-                  <Button variant="primary">
-                    Edit
-                  </Button>
+                  {/* <Button variant="primary" size="sm" onClick={ this.showGameModal }>
+                    Edit { game && <GameEdit show={ this.state.showGameEdit } hideModalFunc={ this.hideGameModal } gameId={game.id} />}
+                  </Button> */}
                 </Col>
               </Row>
               <h1 className="d-flex justify-content-center">
@@ -128,8 +161,8 @@ gameStatus = (game) => {
                 </h3>
               </Col>
               <Col md={2}>
-                <Button variant="primary" size="sm" onClick={ this.showModal }>
-                  Edit { game && <QuestionEdit show={ this.state.show } hideModalFunc={ this.hideModal } gameId={game.id} />}
+                <Button variant="primary" size="sm" onClick={ this.showQuestionModal }>
+                  Edit { game && <QuestionEdit show={ this.state.showQuestionEdit } hideModalFunc={ this.hideQuestionModal } gameId={game.id} qlistEdit={ game && game.questions } />}
                 </Button>
               </Col>
             </Row>
@@ -143,8 +176,8 @@ gameStatus = (game) => {
                 </h3>
               </Col>
               <Col md={2}>
-               <Button variant="primary" size="sm" onClick={ this.showModal }>
-                  Edit { game && <WinnerEdit show={ this.state.show } hideModalFunc={ this.hideModal } gameId={game.id} />}
+               <Button variant="primary" size="sm" onClick={ this.showWinnerModal }>
+                  Edit { game && <WinnerEdit show={ this.state.showWinnerEdit } hideModalFunc={ this.hideWinnerModal } gameId={ game.id } winnerListEdit={ game && game.cards } />}
                 </Button>
               </Col>
             </Row>

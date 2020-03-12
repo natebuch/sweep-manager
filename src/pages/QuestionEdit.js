@@ -17,24 +17,17 @@ class questionEdit extends Component {
     }
   }
 
-  componentDidMount = () => {  
-    let result = gameObject.filter(game => game.id == this.props.gameId )
-    this.setState({ questions: result[0].questions})
-    console.log(this.state.game)
-  }
-
     loadQuestions = () => {
-    return this.state.questions.map(question => {
+      const { qlistEdit } = this.props
+      return qlistEdit.map(question => {
       return (
         <tr>
-        <td>
-          <textarea placeholder={ question.question } >
-          </textarea>
-        </td>
-        <td>
-          <textarea placeholder={ question.answer }>
-          </textarea>
-        </td>
+          <td>
+            <input placeholder={ question.description } />
+          </td>
+          <td>
+            <input placeholder={ question.status } />
+          </td>
         </tr>
       )
     })
@@ -43,9 +36,9 @@ class questionEdit extends Component {
   render() { 
 
     const { show, hideModalFunc } = this.props
-    
-    return (  
+      return ( 
       <div>
+        
         <Modal size="lg" show={show} backdrop="static" onHide={ hideModalFunc }>
           <Modal.Header closeButton >
             <Modal.Title>Edit Games</Modal.Title>

@@ -16,21 +16,18 @@ class WinnerEdit extends Component {
     }
   }
 
-  componentDidMount = () => {  
-    let result = gameObject.filter(game => game.id == this.props.gameId )
-    this.setState({ players: result[0].players})
-    console.log(this.state.game)
-  }
-
+ 
   loadPlayers = () => {
-    return this.state.players.map(winner => {
-      if (winner.winner) {
+    const { winnerListEdit } = this.props
+    console.log(winnerListEdit)
+    return winnerListEdit.map(winner => {
+      if (winner.sweep === 1) {
         return (
           <tr>
-            <td>{ winner.id }</td>
-            <td>{ winner.firstName }</td>
-            <td>{ winner.lastName }</td>
-            <td>{ winner.address }</td>
+            <td>{ winner.winner_id }</td>
+            <td>{ winner.winner_first_name }</td>
+            <td>{ winner.winner_last_name }</td>
+            <td>{ winner.winner_address }</td>
           </tr>
         )
       }
@@ -51,7 +48,7 @@ class WinnerEdit extends Component {
           <Table striped bordered hover>
             <thead>
               <tr>
-                <th>Plauer ID</th>
+                <th>Player ID</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Address</th>
