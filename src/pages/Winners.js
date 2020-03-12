@@ -64,7 +64,7 @@ class Winners extends Component {
             { winner.winner_last_name}
           </td>
           <td>
-            { winner.address}
+            { winner.winner_address}
           </td>
         </tr>
       )   
