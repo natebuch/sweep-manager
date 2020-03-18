@@ -19,11 +19,10 @@ class WinnerEdit extends Component {
  
   loadPlayers = () => {
     const { winnerListEdit } = this.props
-    console.log(winnerListEdit)
     return winnerListEdit.map(winner => {
       if (winner.sweep === 1) {
         return (
-          <tr>
+          <tr key={ winner.winner_id }>
             <td>{ winner.winner_id }</td>
             <td>{ winner.winner_first_name }</td>
             <td>{ winner.winner_last_name }</td>

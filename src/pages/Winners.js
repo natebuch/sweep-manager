@@ -23,7 +23,7 @@ class Winners extends Component {
 
     return winnerListing.map(winner => {   
       return (
-        <tr>
+        <tr key={ winner.winner_id }>
           <td>
             { winner.winner_id}
           </td>
@@ -53,7 +53,7 @@ class Winners extends Component {
 
     return prevWinnerList.map(winner => {   
       return (
-        <tr>
+        <tr key={ winner.winner_id }>
           <td>
             { winner.winner_id}
           </td>
@@ -75,7 +75,6 @@ class Winners extends Component {
 
   render() { 
     const { winnerList } = this.props
-    console.log( winnerList)
       return (
         <div>
           <Table striped bordered hover>

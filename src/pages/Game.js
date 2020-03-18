@@ -22,13 +22,15 @@ class Game extends Component {
     this.state = { 
       game: null,
       gameDetails: null,
-      questions: null,
+      newQuestions: null,
       winners: null,
       players: null,
       show: false,
       showQuestionEdit: false,
       showGameEdit: false,
-      showWinnerEdit: false
+      showWinnerEdit: false,
+      questionDescriptionInput: "",
+      questionStatusInput: ""
     }
   }
         
@@ -39,9 +41,9 @@ class Game extends Component {
     .then((data) => {
       this.setState({
         game: data.game,
-        questions: data.game.questions,
         winners: data.game.cards.winners,
-        players: data.game.players
+        players: data.game.players,
+        newQuestions: data.game.questions
       });
     });
   }
@@ -88,7 +90,6 @@ gameStatus = (game) => {
     }
 
     hideQuestionModal = () => {
-      console.log('hide modal')
       setTimeout(() => {
         this.setState({ showQuestionEdit: false })
       }, 100)
@@ -99,7 +100,6 @@ gameStatus = (game) => {
     }
 
     hideGameModal = () => {
-      console.log('hide modal')
       setTimeout(() => {
         this.setState({ showGameEdit: false })
       }, 100)
@@ -110,15 +110,57 @@ gameStatus = (game) => {
     }
 
     hideWinnerModal = () => {
-      console.log('hide modal')
       setTimeout(() => {
         this.setState({ showWinnerEdit: false })
       }, 100)
     }
-   
+
+    handleQuestionStatusChange = (e) => {
+      this.setState({
+        questionStatusInput: e.target.value,
+      });
+    }
+
+    handleQuestionDescriptionChange = (e) => {
+      this.setState({
+        questionDescriptionInput: e.target.value,
+      });
+    }
+      
+    handleQuestionAdd = () => {
+      const questionArr = this.state.newQuestions
+      const newQuestion = {
+        id: null,
+        description: this.state.questionDescriptionInput,
+        status: this.state.questionStatusInput
+      }
+
+      questionArr.push(newQuestion)
+      
+      this.setState({ 
+        newQuestions: questionArr,
+        questionDescriptionInput: "",
+        questionStatusInput: ""
+      })
+    }
+
+    clearQuestionChanges = () => {
+      const noQuestionChanges = this.state.game.questions
+      this.setState({
+        newQuestions: noQuestionChanges
+      })
+    }
+
+    handleSaveQuestion = () => {
+      const savedQuestions = this.state.newQuestions
+      this.setState({
+        questions: savedQuestions
+      })
+    }
+
+ 
   render() {
-    const { game } = this.state
-    console.log(game && game.players)
+    const { game, questionDescriptionInput, questionStatusInput, newQuestions } = this.state
     return (
       <div>
         <Navbar bg="dark" variant="dark">
@@ -162,11 +204,25 @@ gameStatus = (game) => {
               </Col>
               <Col md={2}>
                 <Button variant="primary" size="sm" onClick={ this.showQuestionModal }>
-                  Edit { game && <QuestionEdit show={ this.state.showQuestionEdit } hideModalFunc={ this.hideQuestionModal } gameId={game.id} qlistEdit={ game && game.questions } />}
+                  Edit 
+                    { game && <QuestionEdit 
+                      show={ this.state.showQuestionEdit } 
+                      handleQuestionAddFunc={ this.handleQuestionAdd }
+                      handleQuestionDescriptionChangeFunc={ this.handleQuestionDescriptionChange } 
+                      handleQuestionStatusChangeFunc={ this.handleQuestionStatusChange } 
+                      handleSaveQuestionFunc={ this.handleSaveQuestion }
+                      hideModalFunc={ this.hideQuestionModal } 
+                      gameId={game.id} 
+                      qlistEdit={ newQuestions }
+                      qlist={ game.questions }
+                      questionStatusInput={ questionStatusInput } 
+                      questionDescriptionInput={ questionDescriptionInput }
+                      clearQuestionChangesFunc={ this.clearQuestionChanges }
+                    />}
                 </Button>
               </Col>
             </Row>
-            { game && <Questions qlist={ game && game.questions } /> }
+            { game && <Questions qlist={ game.questions }/> }
           </Col>
           <Col md={{ span: 4, offset: 2 }}>
             <Row >

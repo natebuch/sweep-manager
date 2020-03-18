@@ -18,9 +18,8 @@ class Questions extends Component {
   loadQuestions = () => {
     const { qlist }  = this.props
     return qlist.map(question => {
-      console.log(question)
       return (
-        <tr>
+        <tr key={ question.description }>
           <td>{ question.description }</td>
           <td>{ question.status }</td>
         </tr>
@@ -29,14 +28,13 @@ class Questions extends Component {
   }
   
   render() { 
-    console.log(this.props)
       return (
         <div>
           <Table striped bordered hover>
             <thead>
               <tr>
                 <th>Game Questions</th>
-                <th>Game Results</th>
+                <th>Game Status</th>
               </tr>
             </thead>
             <tbody>

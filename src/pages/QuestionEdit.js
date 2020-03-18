@@ -17,49 +17,75 @@ class questionEdit extends Component {
     }
   }
 
-    loadQuestions = () => {
+    loadEditQuestions = () => {
       const { qlistEdit } = this.props
       return qlistEdit.map(question => {
       return (
-        <tr>
+        <tr key={ question.id }>
           <td>
-            <input placeholder={ question.description } />
+            { question.description }
           </td>
           <td>
-            <input placeholder={ question.status } />
+            { question.status }
+          </td>
+          <td>
+            <Button variant="danger" style = {{ marginLeft: 5, marginRight: 5 }}>
+              -
+            </Button>
           </td>
         </tr>
       )
     })
   }
 
+  addQuestions = () => {
+    const { 
+      handleQuestionAddFunc,
+      handleQuestionDescriptionChangeFunc, 
+      handleQuestionStatusChangeFunc, 
+      questionDescriptionInput, 
+      questionStatusInput,
+    } = this.props
+    
+    return (
+    <tr>
+      <td>
+        <textarea type="text" placeholder="Question Description" value={ questionDescriptionInput } onChange={ handleQuestionDescriptionChangeFunc }/>
+      </td>
+      <td>
+        <textarea type="text" placeholder="Question Status" value={ questionStatusInput } onChange={ handleQuestionStatusChangeFunc }/>
+      </td>
+      <td>
+        <Button variant="success" onClick={ handleQuestionAddFunc }>
+          + 
+        </Button>
+      </td>
+    </tr>
+    )
+  }
+
   render() { 
 
-    const { show, hideModalFunc } = this.props
+    const { show, hideModalFunc, handleSaveQuestion, clearQuestionChangesFunc } = this.props
       return ( 
       <div>
         
-        <Modal size="lg" show={show} backdrop="static" onHide={ hideModalFunc }>
-          <Modal.Header closeButton >
+        <Modal size="lg" show={show} backdrop="static" onHide={ hideModalFunc } >
+          <Modal.Header closeButton onClick={ clearQuestionChangesFunc }>
             <Modal.Title>Edit Games</Modal.Title>
           </Modal.Header>
           <Modal.Body>
           <Form>
             <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Game Questions</th>
-                  <th>Game Results</th>
-                </tr>
-              </thead>
               <tbody>
-                { this.loadQuestions() }
+                { this.loadEditQuestions() }
+                { this.addQuestions() }
               </tbody>
             </Table>
           </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="primary">
+            <Button variant="primary" onClick={ handleSaveQuestion, hideModalFunc } >
               Save Changes
             </Button>
           </Modal.Footer>

@@ -17,9 +17,8 @@ class Players extends Component {
   loadPlayerList = () => {
     const  { playerList } = this.props
     return playerList.map(player => {
-      console.log(player)
       return (
-        <tr>
+        <tr key={ player.id }>
           <td>{ player.id }</td>
           <td>{ player.first_name }</td>
           <td>{ player.last_name }</td>
@@ -30,7 +29,6 @@ class Players extends Component {
   }
   
   render() {
-    console.log(this.props)
       return (
       <div>
         <h3>
