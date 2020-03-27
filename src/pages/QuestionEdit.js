@@ -8,19 +8,20 @@ import { Modal } from 'react-bootstrap'
 import gameObject from './gameObject'
 import { Form } from 'react-bootstrap'
 
-
 class questionEdit extends Component {
   constructor(props) {
     super(props);
-    this.state = {   
-      questions: []
+    this.state = { 
+      questions: JSON.parse(JSON.stringify(this.props.qlistEdit)), 
+      questionDescriptionInput: "",
+      questionStatusInput: "",
     }
   }
 
-    loadEditQuestions = () => {
-      const { qlistEdit } = this.props
-      return qlistEdit.map(question => {
-      return (
+  loadEditQuestions = () => {
+    const questions = this.state.questions
+      return questions.map(question => {
+          return (
         <tr key={ question.id }>
           <td>
             { question.description }
@@ -38,25 +39,61 @@ class questionEdit extends Component {
     })
   }
 
-  addQuestions = () => {
-    const { 
-      handleQuestionAddFunc,
-      handleQuestionDescriptionChangeFunc, 
-      handleQuestionStatusChangeFunc, 
-      questionDescriptionInput, 
-      questionStatusInput,
-    } = this.props
-    
+ 
+    handleQuestionStatusChange = (e) => {
+      this.setState({
+        questionStatusInput: e.target.value,
+      });
+    }
+
+    handleQuestionDescriptionChange = (e) => {
+      this.setState({
+        questionDescriptionInput: e.target.value,
+      });
+    }
+      
+    handleQuestionAdd = () => {
+      const questionArr = this.state.questions
+      const editQuestion = {
+        id: null,
+        description: this.state.questionDescriptionInput,
+        status: this.state.questionStatusInput
+      }
+
+      questionArr.push(editQuestion)
+      
+      this.setState({ 
+        questions: questionArr,
+        questionDescriptionInput: "",
+        questionStatusInput: ""
+      })
+    }
+
+    clearQuestionChanges = () => {
+      const { questionDescriptionInput, questionStatusInput, editQuestions } = this.state
+      const noQuestionChanges = this.props.qlistEdit
+      this.setState({
+        questions: noQuestionChanges,
+        questionDescriptionInput: "",
+        questionStatusInput: ""
+      })
+    }
+
+    addQuestions = () => {
+      const { 
+        questionDescriptionInput, 
+        questionStatusInput,
+      } = this.state
     return (
     <tr>
       <td>
-        <textarea type="text" placeholder="Question Description" value={ questionDescriptionInput } onChange={ handleQuestionDescriptionChangeFunc }/>
+        <textarea type="text" placeholder="Question Description" value={ questionDescriptionInput } onChange={ this.handleQuestionDescriptionChange }/>
       </td>
       <td>
-        <textarea type="text" placeholder="Question Status" value={ questionStatusInput } onChange={ handleQuestionStatusChangeFunc }/>
+        <textarea type="text" placeholder="Question Status" value={ questionStatusInput } onChange={ this.handleQuestionStatusChange }/>
       </td>
       <td>
-        <Button variant="success" onClick={ handleQuestionAddFunc }>
+        <Button variant="success" onClick={ this.handleQuestionAdd }>
           + 
         </Button>
       </td>
@@ -64,14 +101,17 @@ class questionEdit extends Component {
     )
   }
 
-  render() { 
-
-    const { show, hideModalFunc, handleSaveQuestion, clearQuestionChangesFunc } = this.props
-      return ( 
+  render() {
+    console.log(this.state.questions)
+    console.log(this.props.qlistEdit)
+    const {
+      hideModalFunc,
+      show
+    } = this.props
+     return ( 
       <div>
-        
-        <Modal size="lg" show={show} backdrop="static" onHide={ hideModalFunc } >
-          <Modal.Header closeButton onClick={ clearQuestionChangesFunc }>
+        <Modal size="lg" show={ show } onHide={ hideModalFunc, this.clearQuestionChanges } >
+          <Modal.Header closeButton>
             <Modal.Title>Edit Games</Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -85,7 +125,7 @@ class questionEdit extends Component {
           </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="primary" onClick={ handleSaveQuestion, hideModalFunc } >
+            <Button variant="primary" onClick={  hideModalFunc } >
               Save Changes
             </Button>
           </Modal.Footer>

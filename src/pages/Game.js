@@ -22,15 +22,12 @@ class Game extends Component {
     this.state = { 
       game: null,
       gameDetails: null,
-      newQuestions: null,
+      questions: null,
       winners: null,
       players: null,
-      show: false,
       showQuestionEdit: false,
       showGameEdit: false,
       showWinnerEdit: false,
-      questionDescriptionInput: "",
-      questionStatusInput: ""
     }
   }
         
@@ -43,7 +40,7 @@ class Game extends Component {
         game: data.game,
         winners: data.game.cards.winners,
         players: data.game.players,
-        newQuestions: data.game.questions
+        questions: data.game.questions
       });
     });
   }
@@ -115,42 +112,6 @@ gameStatus = (game) => {
       }, 100)
     }
 
-    handleQuestionStatusChange = (e) => {
-      this.setState({
-        questionStatusInput: e.target.value,
-      });
-    }
-
-    handleQuestionDescriptionChange = (e) => {
-      this.setState({
-        questionDescriptionInput: e.target.value,
-      });
-    }
-      
-    handleQuestionAdd = () => {
-      const questionArr = this.state.newQuestions
-      const newQuestion = {
-        id: null,
-        description: this.state.questionDescriptionInput,
-        status: this.state.questionStatusInput
-      }
-
-      questionArr.push(newQuestion)
-      
-      this.setState({ 
-        newQuestions: questionArr,
-        questionDescriptionInput: "",
-        questionStatusInput: ""
-      })
-    }
-
-    clearQuestionChanges = () => {
-      const noQuestionChanges = this.state.game.questions
-      this.setState({
-        newQuestions: noQuestionChanges
-      })
-    }
-
     handleSaveQuestion = () => {
       const savedQuestions = this.state.newQuestions
       this.setState({
@@ -160,8 +121,8 @@ gameStatus = (game) => {
 
  
   render() {
-    const { game, questionDescriptionInput, questionStatusInput, newQuestions } = this.state
-    return (
+    const { game, questions} = this.state
+     return (
       <div>
         <Navbar bg="dark" variant="dark">
           <Navbar.Brand href="#home">Navbar</Navbar.Brand>
@@ -207,22 +168,14 @@ gameStatus = (game) => {
                   Edit 
                     { game && <QuestionEdit 
                       show={ this.state.showQuestionEdit } 
-                      handleQuestionAddFunc={ this.handleQuestionAdd }
-                      handleQuestionDescriptionChangeFunc={ this.handleQuestionDescriptionChange } 
-                      handleQuestionStatusChangeFunc={ this.handleQuestionStatusChange } 
                       handleSaveQuestionFunc={ this.handleSaveQuestion }
-                      hideModalFunc={ this.hideQuestionModal } 
                       gameId={game.id} 
-                      qlistEdit={ newQuestions }
-                      qlist={ game.questions }
-                      questionStatusInput={ questionStatusInput } 
-                      questionDescriptionInput={ questionDescriptionInput }
-                      clearQuestionChangesFunc={ this.clearQuestionChanges }
-                    />}
+                      qlistEdit={ questions }
+                         />}
                 </Button>
               </Col>
             </Row>
-            { game && <Questions qlist={ game.questions }/> }
+            { game && <Questions qlist={ questions }/> }
           </Col>
           <Col md={{ span: 4, offset: 2 }}>
             <Row >
