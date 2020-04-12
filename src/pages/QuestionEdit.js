@@ -12,7 +12,8 @@ class questionEdit extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      questions: JSON.parse(JSON.stringify(this.props.qlistEdit)), 
+      questions: this.props.qlistEdit,
+      newQuestions: this.props.newQuestions,  
       questionDescriptionInput: "",
       questionStatusInput: "",
     }
@@ -23,6 +24,27 @@ class questionEdit extends Component {
       return questions.map(question => {
           return (
         <tr key={ question.id }>
+          <td>
+            { question.description }
+          </td>
+          <td>
+            { question.status }
+          </td>
+          <td>
+            <Button variant="danger" style = {{ marginLeft: 5, marginRight: 5 }}>
+              -
+            </Button>
+          </td>
+        </tr>
+      )
+    })
+  }
+
+  loadNewQuestions = () => {
+    const questions = this.props.newQuestions
+      return questions.map((question, index) => {
+          return (
+        <tr key={ index }>
           <td>
             { question.description }
           </td>
@@ -53,7 +75,7 @@ class questionEdit extends Component {
     }
       
     handleQuestionAdd = () => {
-      const questionArr = this.state.questions
+      const questionArr = this.state.newQuestions
       const editQuestion = {
         id: null,
         description: this.state.questionDescriptionInput,
@@ -63,19 +85,19 @@ class questionEdit extends Component {
       questionArr.push(editQuestion)
       
       this.setState({ 
-        questions: questionArr,
+        newQuestions: questionArr,
         questionDescriptionInput: "",
         questionStatusInput: ""
       })
     }
 
     clearQuestionChanges = () => {
-      const { questionDescriptionInput, questionStatusInput, editQuestions } = this.state
-      const noQuestionChanges = this.props.qlistEdit
+    const noQuestionChanges = this.props.qlistEdit
       this.setState({
         questions: noQuestionChanges,
         questionDescriptionInput: "",
-        questionStatusInput: ""
+        questionStatusInput: "",
+        newQuestions: []
       })
     }
 
@@ -101,16 +123,17 @@ class questionEdit extends Component {
     )
   }
 
-  render() {
+   render() {
     console.log(this.state.questions)
     console.log(this.props.qlistEdit)
     const {
       hideModalFunc,
-      show
+      showModal
     } = this.props
+
      return ( 
       <div>
-        <Modal size="lg" show={ show } onHide={ hideModalFunc, this.clearQuestionChanges } >
+        <Modal size="lg" show={ showModal } backdrop="static" onHide={ hideModalFunc } onExit={ () => { this.clearQuestionChanges() } }>
           <Modal.Header closeButton>
             <Modal.Title>Edit Games</Modal.Title>
           </Modal.Header>
@@ -119,13 +142,14 @@ class questionEdit extends Component {
             <Table striped bordered hover>
               <tbody>
                 { this.loadEditQuestions() }
+                { this.loadNewQuestions() }
                 { this.addQuestions() }
               </tbody>
             </Table>
           </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="primary" onClick={  hideModalFunc } >
+            <Button variant="primary" onClick={ this.props.handleSaveQuestionFunc } >
               Save Changes
             </Button>
           </Modal.Footer>

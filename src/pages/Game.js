@@ -23,6 +23,7 @@ class Game extends Component {
       game: null,
       gameDetails: null,
       questions: null,
+      newQuestions: [],
       winners: null,
       players: null,
       showQuestionEdit: false,
@@ -113,15 +114,18 @@ gameStatus = (game) => {
     }
 
     handleSaveQuestion = () => {
-      const savedQuestions = this.state.newQuestions
-      this.setState({
-        questions: savedQuestions
+      const ogQuestions = this.state.questions
+      const newQuestions = this.state.newQuestions
+      const allQuestions = ogQuestions.concat(newQuestions)
+      this.setState({ 
+        questions: allQuestions
       })
+      this.hideQuestionModal()
     }
 
  
   render() {
-    const { game, questions} = this.state
+    const { game, questions, newQuestions} = this.state
      return (
       <div>
         <Navbar bg="dark" variant="dark">
@@ -167,10 +171,12 @@ gameStatus = (game) => {
                 <Button variant="primary" size="sm" onClick={ this.showQuestionModal }>
                   Edit 
                     { game && <QuestionEdit 
-                      show={ this.state.showQuestionEdit } 
+                      showModal={ this.state.showQuestionEdit }
+                      hideModalFunc={ this.hideQuestionModal } 
                       handleSaveQuestionFunc={ this.handleSaveQuestion }
                       gameId={game.id} 
                       qlistEdit={ questions }
+                      newQuestions = { newQuestions }
                          />}
                 </Button>
               </Col>
