@@ -7,6 +7,8 @@ import Badge from 'react-bootstrap/Badge'
 import moment from 'moment';
 import gameObject from './gameObject'
 import Navbar from 'react-bootstrap/Navbar'
+import axios from 'axios'
+
 
 
 
@@ -18,13 +20,29 @@ class Games extends Component {
     }
   }
 
+  // componentDidMount() {
+  //   fetch("http://localhost:3000/games.json").then((response) => {
+  //     return response.json()
+  //   }).then((data) => {
+  //     this.setState({ games: data.games})
+  //   })
+  // }
+
   componentDidMount() {
-    fetch("http://localhost:3000/games.json").then((response) => {
-      return response.json()
-    }).then((data) => {
-      this.setState({ games: data.games})
+    axios.get(`http://localhost:3000/games`).then((response) => {
+      let data = response.data
+      console.log(data)
+      return data
     })
+    .then((data) => {
+      this.setState({
+        games: data.games
+      });
+    });
+    console.log('***'+this.state.games)
   }
+
+
 
   returnGameList = () => {
     const { games } = this.state

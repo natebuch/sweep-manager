@@ -15,6 +15,7 @@ import moment from 'moment';
 import gameObject from './gameObject'
 import Alert from 'react-bootstrap/Alert'
 import { Button } from 'react-bootstrap'
+import axios from 'axios'
 
 class Game extends Component {
   constructor(props) {
@@ -33,8 +34,9 @@ class Game extends Component {
   }
         
   componentDidMount() {
-    fetch(`http://localhost:3000/games/${ this.props.match.params.id }`) .then((response) => {
-      return response.json()
+    axios.get(`http://localhost:3000/games/${ this.props.match.params.id }`) .then((response) => {
+      let data = response.data  
+      return data
     })
     .then((data) => {
       this.setState({
@@ -120,6 +122,12 @@ gameStatus = (game) => {
       this.setState({ 
         questions: allQuestions
       })
+      if ( newQuestions.length > 0 ) {
+        newQuestions.map(question => {
+          axios.post("http://localhost:3000/questions", { question: { game_id: this.state.game.id, description: question.description, status: 1, is_active: 1 }}).then((response) => {
+          })     
+        })
+      }
       this.hideQuestionModal()
     }
 
