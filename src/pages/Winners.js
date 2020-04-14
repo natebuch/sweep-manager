@@ -77,7 +77,10 @@ class Winners extends Component {
     const { winnerList } = this.props
       return (
         <div>
-          <Table striped bordered hover>
+          <h3>
+          Current Winner
+        </h3>
+          <Table size="sm" striped bordered hover>
             <thead>
               <tr>
                 <th>Player ID</th>

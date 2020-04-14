@@ -4,8 +4,11 @@ import { Table } from 'react-bootstrap'
 import { Button } from 'react-bootstrap'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
-
-
+import { Modal } from 'react-bootstrap'
+import gameObject from './gameObject'
+import { Form } from 'react-bootstrap'
+import DropdownButton from 'react-bootstrap/DropdownButton'
+import Dropdown from 'react-bootstrap/Dropdown'
 
 class Questions extends Component {
   constructor(props) {
@@ -14,36 +17,37 @@ class Questions extends Component {
     }
   }
 
-  
-  loadQuestions = () => {
-    const { qlist }  = this.props
-    return qlist.map(question => {
-      return (
-        <tr key={ question.description }>
-          <td>{ question.description }</td>
-          <td>{ question.status }</td>
-        </tr>
-      )
-    })
-  }
-  
-  render() { 
-      return (
-        <div>
-          <Table striped bordered hover>
+     render() {
+      const  {
+        loadQuestionsFunc, 
+        loadNewQuestionsFunc, 
+        addQuestionsFunc, 
+        clearQuestionChangesFunc,
+        handleSaveQuestionFunc
+      } = this.props
+      return ( 
+      <div>
+        <h3>
+          Questions
+        </h3>
+        <Form>
+          <Table striped bordered hover size="sm">
             <thead>
               <tr>
-                <th>Game Questions</th>
-                <th>Game Status</th>
+                <th>Question</th>
+                <th>Status</th>
+                <th>Add/Remove</th>
               </tr>
             </thead>
             <tbody>
-              { this.loadQuestions() }
+              { loadQuestionsFunc }
+              { addQuestionsFunc }
             </tbody>
           </Table>
-        </div>        
-      )
-    }
+        </Form>
+       </div>
+    );
   }
-
+}
+ 
 export default Questions;

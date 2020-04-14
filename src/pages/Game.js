@@ -5,7 +5,6 @@ import Row from 'react-bootstrap/Row'
 import Badge from 'react-bootstrap/Badge'
 import Navbar from 'react-bootstrap/Navbar'
 import Questions from './Questions'
-import QuestionEdit from './QuestionEdit'
 import Winners from './Winners'
 import WinnerEdit from './WinnerEdit'
 import Players from './Players'
@@ -17,6 +16,9 @@ import Alert from 'react-bootstrap/Alert'
 import { Button } from 'react-bootstrap'
 import axios from 'axios'
 
+const pending = 0
+const complete = 1
+
 class Game extends Component {
   constructor(props) {
     super(props);
@@ -27,9 +29,8 @@ class Game extends Component {
       newQuestions: [],
       winners: null,
       players: null,
-      showQuestionEdit: false,
-      showGameEdit: false,
-      showWinnerEdit: false,
+      questionDescriptionInput: "",
+      questionStatusInput: ""
     }
   }
         
@@ -77,143 +78,173 @@ gameStatus = (game) => {
     }
   }
 
-    // showModal = () => {
-    //   this.setState(prevState => { 
-    //     return {
-    //       show: !prevState.show
-    //     }
-    //   })
-    // }
+  //Refactor to combine
 
-    showQuestionModal = () => {
-      this.setState({ showQuestionEdit: true})
+  
+
+  handleQuestionStatusChange = (e) => {
+    this.setState({
+      questionStatusInput: e.target.value
+    });
+  }
+
+  handleQuestionDescriptionChange = (e) => {
+    this.setState({
+      questionDescriptionInput: e.target.value,
+    });
+  }
+    
+  loadQuestions = () => {
+    const questions = this.state.questions
+      return questions.map(question => {
+          return (
+        <tr key={ question.id }>
+          <td>
+            { question.description }
+          </td>
+          <td>
+            { question.status }
+          </td>
+          <td style={{ textAlign: "center" }}>
+            <Button size="sm" variant="danger" style = {{ marginLeft: 5, marginRight: 5  }} onClick={ () => { this.inactivateQuestion(question.id) } }>
+              -
+            </Button>
+          </td>
+        </tr>
+      )
+    })
+  }
+
+    addQuestions = () => {
+    return (
+    <tr>
+      <td>
+        <textarea type="text" placeholder="Question Description" value={ this.state.questionDescriptionInput } onChange={ this.handleQuestionDescriptionChange }/>
+      </td>
+      <td>
+        <textarea type="text" placeholder="Status" value={ this.state.questionStatusInput } onChange={ this.handleQuestionStatusChange }/>
+      </td>
+      <td style={{ textAlign: "center" }}>
+        <Button variant="success" onClick={ this.handleQuestionAdd }>
+          + 
+        </Button>
+      </td>
+    </tr>
+    )
+  }
+
+  inactivateQuestion = (id) => {
+    axios.patch(`http://localhost:3000/questions/${ id }`, { question: {is_active: 0 }}) .then((response) => {
+      let data = response.data  
+      console.log(data)
+      return data
+    }) .then((data) => {
+      
+      
     }
 
-    hideQuestionModal = () => {
-      setTimeout(() => {
-        this.setState({ showQuestionEdit: false })
-      }, 100)
-    }
+  }
 
-    showGameModal = () => {
-      this.setState({ showGameEdit: true})
+  handleQuestionAdd = () => {
+    const questionArr = this.state.questions
+    const editQuestion = {
+      description: this.state.questionDescriptionInput,
+      status: this.state.questionStatusInput
     }
-
-    hideGameModal = () => {
-      setTimeout(() => {
-        this.setState({ showGameEdit: false })
-      }, 100)
+    
+    if (editQuestion.description.length > 0 && editQuestion.description.length > 0) {
+    axios.post("http://localhost:3000/questions", { question: { game_id: this.state.game.id, description: editQuestion.description, status: 1, is_active: 1 }}).then((response) => {
+      let data = response.data.question
+      console.log(data)
+      return data
+    })
+    .then((data) => {
+      questionArr.push(data)
+      this.setState({
+        questions: questionArr,
+        questionDescriptionInput: "",
+        questionStatusInput: ""
+      });
+    });
+    } else {
+      window.alert("Question text cannot be empty")
     }
+    console.log(this.state.questions)
+  }
 
-    showWinnerModal = () => {
-      this.setState({ showWinnerEdit: true})
-    }
 
-    hideWinnerModal = () => {
-      setTimeout(() => {
-        this.setState({ showWinnerEdit: false })
-      }, 100)
-    }
+  
+  clearQuestionChanges = () => {
+    this.setState({
+      questionDescriptionInput: "",
+      questionStatusInput: "",
+      newQuestions: []
+    },
 
-    handleSaveQuestion = () => {
-      const ogQuestions = this.state.questions
-      const newQuestions = this.state.newQuestions
-      const allQuestions = ogQuestions.concat(newQuestions)
-      this.setState({ 
-        questions: allQuestions
-      })
-      if ( newQuestions.length > 0 ) {
-        newQuestions.map(question => {
-          axios.post("http://localhost:3000/questions", { question: { game_id: this.state.game.id, description: question.description, status: 1, is_active: 1 }}).then((response) => {
-          })     
-        })
-      }
-      this.hideQuestionModal()
-    }
+      console.log(this.state.newQuestions)
+    )}
 
- 
   render() {
-    const { game, questions, newQuestions} = this.state
-     return (
-      <div>
-        <Navbar bg="dark" variant="dark">
-          <Navbar.Brand href="#home">Navbar</Navbar.Brand>
-        </Navbar>
-        <Row>
-          <Col md={{ span: 8, offset: 2}}>
-            <Jumbotron style={{ marginTop: 10, paddingTop: 10, paddingRight: 20 }}>
-              <Row>
-                <Col md={{ span: 1, offset: 11}}>
-                  {/* <Button variant="primary" size="sm" onClick={ this.showGameModal }>
-                    Edit { game && <GameEdit show={ this.state.showGameEdit } hideModalFunc={ this.hideGameModal } gameId={game.id} />}
-                  </Button> */}
-                </Col>
-              </Row>
-              <h1 className="d-flex justify-content-center">
-                { game && game.description }
-              </h1>
-              <Alert className="d-flex justify-content-center" variant={'success'}>
-                Start: { game && moment(game.start).format('MMMM Do YYYY, h:mm:ss a')}
-              </Alert>
-              <h1 className="d-flex justify-content-center">
-                { this.gameStatus() }
-                <Badge variant={game && game.client.name  === "NFL" ? 'info' : 'danger' }>
-                  { game && game.client.name }
-                </Badge>
-                <Badge variant={ 'dark' }>
-                  { game && game.game_type.description }
-                </Badge>
-              </h1>
-            </Jumbotron>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={{ span: 4, offset: 1}}>
-            <Row >
-              <Col md={10}>
-                <h3>
-                  Game Questions
-                </h3>
-              </Col>
-              <Col md={2}>
-                <Button variant="primary" size="sm" onClick={ this.showQuestionModal }>
-                  Edit 
-                    { game && <QuestionEdit 
-                      showModal={ this.state.showQuestionEdit }
-                      hideModalFunc={ this.hideQuestionModal } 
-                      handleSaveQuestionFunc={ this.handleSaveQuestion }
-                      gameId={game.id} 
-                      qlistEdit={ questions }
-                      newQuestions = { newQuestions }
-                         />}
-                </Button>
+    const { game, questions, newQuestions, questionDescriptionInput, questionStatusInput} = this.state
+    return (
+    <div>
+      <Navbar bg="dark" variant="dark">
+        <Navbar.Brand href="#home">Navbar</Navbar.Brand>
+      </Navbar>
+      <Row>
+        <Col md={{ span: 8, offset: 2}}>
+          <Jumbotron style={{ marginTop: 10, paddingTop: 10, paddingRight: 20 }}>
+            <Row>
+              <Col md={{ span: 1, offset: 11}}>
+                {/* <Button variant="primary" size="sm" onClick={ this.showGameModal }>
+                  Edit { game && <GameEdit show={ this.state.showGameEdit } hideModalFunc={ this.hideGameModal } gameId={game.id} />}
+                </Button> */}
               </Col>
             </Row>
-            { game && <Questions qlist={ questions }/> }
+            <h1 className="d-flex justify-content-center">
+              { game && game.description }
+            </h1>
+            <Alert className="d-flex justify-content-center" variant={'success'}>
+              Start: { game && moment(game.start).format('MMMM Do YYYY, h:mm:ss a')}
+            </Alert>
+            <h1 className="d-flex justify-content-center">
+              { this.gameStatus() }
+              <Badge variant={game && game.client.name  === "NFL" ? 'info' : 'danger' }>
+                { game && game.client.name }
+              </Badge>
+              <Badge variant={ 'dark' }>
+                { game && game.game_type.description }
+              </Badge>
+            </h1>
+          </Jumbotron>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={{ span: 4, offset: 1}}>
+          <Col md={10}>
           </Col>
-          <Col md={{ span: 4, offset: 2 }}>
-            <Row >
-              <Col md={10}>
-                <h3>
-                  Game Winners
-                </h3>
-              </Col>
-              <Col md={2}>
-               <Button variant="primary" size="sm" onClick={ this.showWinnerModal }>
-                  Edit { game && <WinnerEdit show={ this.state.showWinnerEdit } hideModalFunc={ this.hideWinnerModal } gameId={ game.id } winnerListEdit={ game && game.cards } />}
-                </Button>
-              </Col>
-            </Row>
-            { game && <Winners winnerList={ game.cards }/> }
-          </Col>
-        </Row>
-        <Row>
-          <Col md={{ span: 10, offset: 1}}>
-            { game && <Players playerList={ game && game.players } /> }
-          </Col>
-        </Row>
-      </div>
-    );
+          { game && <Questions
+            handleSaveQuestionFunc={ this.handleSaveQuestion }
+            gameId={game.id} 
+            questions={ questions }
+            newQuestions = { newQuestions }
+            handleClearQuestionChangesFunc={ this.clearQuestionChanges }
+            clearQuestionChangesFunc={ this.clearQuestionChanges }
+            loadQuestionsFunc={ this.loadQuestions() }
+            addQuestionsFunc={ this.addQuestions() }
+          />}
+        </Col>
+        <Col md={{ span: 4, offset: 2 }}>
+          { game && <Winners winnerList={ game.cards }/> }
+        </Col>
+      </Row>
+      <Row>
+        <Col md={{ span: 10, offset: 1}}>
+          { game && <Players playerList={ game && game.players } /> }
+        </Col>
+      </Row>
+    </div>
+  );
   }
 }
  

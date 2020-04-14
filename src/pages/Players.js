@@ -34,7 +34,7 @@ class Players extends Component {
         <h3>
           Player List
         </h3>
-          <Table striped bordered hover>
+          <Table size="sm" striped bordered hover>
             <thead>
               <tr>
                 <th>Player ID</th>
