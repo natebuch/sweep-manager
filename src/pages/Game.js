@@ -95,23 +95,26 @@ gameStatus = (game) => {
   }
     
   loadQuestions = () => {
-    const questions = this.state.questions
-      return questions.map(question => {
-          return (
-        <tr key={ question.id }>
-          <td>
-            { question.description }
-          </td>
-          <td>
-            { question.status }
-          </td>
-          <td style={{ textAlign: "center" }}>
-            <Button size="sm" variant="danger" style = {{ marginLeft: 5, marginRight: 5  }} onClick={ () => { this.inactivateQuestion(question.id) } }>
-              -
-            </Button>
-          </td>
-        </tr>
-      )
+  const questions = this.state.questions
+  
+    return questions.map(question => {
+      if (question.is_active) {
+        return (
+          <tr key={ question.id }>
+            <td>
+              { question.description }
+            </td>
+            <td>
+              { question.status }
+            </td>
+            <td style={{ textAlign: "center" }}>
+              <Button size="sm" variant="danger" style = {{ marginLeft: 5, marginRight: 5  }} onClick={ () => { this.inactivateQuestion(question.id) } }>
+                -
+              </Button>
+            </td>
+          </tr>
+        ) 
+      }
     })
   }
 
@@ -134,15 +137,21 @@ gameStatus = (game) => {
   }
 
   inactivateQuestion = (id) => {
-    axios.patch(`http://localhost:3000/questions/${ id }`, { question: {is_active: 0 }}) .then((response) => {
-      let data = response.data  
-      console.log(data)
-      return data
-    }) .then((data) => {
-      
-      
-    }
-
+    axios.put(`http://localhost:3000/questions/${ id }.json`, { question: { is_active: 0 }}).then((response) => {
+      let data = response.data.question
+      console.log("data = ", data)
+      // items[3] = data, => items[items.findIndex((item) => { item.id === data.id)] = data }
+      const questions = this.state.questions
+      questions.map((question,index) => {
+        if (question.id === data.id) {
+        questions[index] = data
+        }
+      })
+      // questions.map(question => question.id)
+      this.setState({
+        questions: questions
+      })
+    }) 
   }
 
   handleQuestionAdd = () => {
@@ -169,7 +178,6 @@ gameStatus = (game) => {
     } else {
       window.alert("Question text cannot be empty")
     }
-    console.log(this.state.questions)
   }
 
 
@@ -230,7 +238,7 @@ gameStatus = (game) => {
             newQuestions = { newQuestions }
             handleClearQuestionChangesFunc={ this.clearQuestionChanges }
             clearQuestionChangesFunc={ this.clearQuestionChanges }
-            loadQuestionsFunc={ this.loadQuestions() }
+            loadQuestionsFunc={ this.loadQuestions }
             addQuestionsFunc={ this.addQuestions() }
           />}
         </Col>

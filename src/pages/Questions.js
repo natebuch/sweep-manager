@@ -20,10 +20,7 @@ class Questions extends Component {
      render() {
       const  {
         loadQuestionsFunc, 
-        loadNewQuestionsFunc, 
-        addQuestionsFunc, 
-        clearQuestionChangesFunc,
-        handleSaveQuestionFunc
+        addQuestionsFunc
       } = this.props
       return ( 
       <div>
@@ -40,7 +37,7 @@ class Questions extends Component {
               </tr>
             </thead>
             <tbody>
-              { loadQuestionsFunc }
+              { loadQuestionsFunc() }
               { addQuestionsFunc }
             </tbody>
           </Table>
