@@ -30,7 +30,7 @@ class Game extends Component {
       winners: null,
       players: null,
       questionDescriptionInput: "",
-      questionStatusInput: ""
+      questionStatusInput: "default"
     }
   }
         
@@ -104,8 +104,11 @@ gameStatus = (game) => {
             <td>
               { question.description }
             </td>
-            <td>
-              { question.status }
+            <td style={{ textAlign: "center" }}>
+              <select id="status-select-existing" placeholder=">Select game status" onChange={ this.handleQuestionStatusChange } style={{ width: "150px" }}>
+                <option value="0">Pending</option>
+                <option value="1">Complete</option>
+              </select>
             </td>
             <td style={{ textAlign: "center" }}>
               <Button size="sm" variant="danger" style = {{ marginLeft: 5, marginRight: 5  }} onClick={ () => { this.inactivateQuestion(question.id) } }>
@@ -124,8 +127,12 @@ gameStatus = (game) => {
       <td>
         <textarea type="text" placeholder="Question Description" value={ this.state.questionDescriptionInput } onChange={ this.handleQuestionDescriptionChange }/>
       </td>
-      <td>
-        <textarea type="text" placeholder="Status" value={ this.state.questionStatusInput } onChange={ this.handleQuestionStatusChange }/>
+      <td style={{ textAlign: "center"}}>
+        <select id="status-select-add" value={ this.state.questionStatusInput } onChange={ this.handleQuestionStatusChange } style={{ width: "150px" }}>
+          <option value="default" disabled>- Select a status -</option>
+          <option value="0">Pending</option>
+          <option value="1">Complete</option>
+        </select>
       </td>
       <td style={{ textAlign: "center" }}>
         <Button variant="success" onClick={ this.handleQuestionAdd }>
@@ -162,7 +169,7 @@ gameStatus = (game) => {
     }
     
     if (editQuestion.description.length > 0 && editQuestion.description.length > 0) {
-    axios.post("http://localhost:3000/questions", { question: { game_id: this.state.game.id, description: editQuestion.description, status: 1, is_active: 1 }}).then((response) => {
+    axios.post("http://localhost:3000/questions", { question: { game_id: this.state.game.id, description: editQuestion.description, status: this.state.questionStatusInput, is_active: 1 }}).then((response) => {
       let data = response.data.question
       console.log(data)
       return data
