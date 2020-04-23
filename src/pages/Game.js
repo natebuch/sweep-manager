@@ -16,8 +16,7 @@ import Alert from 'react-bootstrap/Alert'
 import { Button } from 'react-bootstrap'
 import axios from 'axios'
 
-const pending = 0
-const complete = 1
+
 
 class Game extends Component {
   constructor(props) {
@@ -30,12 +29,15 @@ class Game extends Component {
       winners: null,
       players: null,
       questionDescriptionInput: "",
-      questionStatusInput: "default"
+      questionStatusInput: "",
+      questionNewStatusInput: "default",
+      statusTargetId: null,
+      statusValue: null
     }
   }
         
   componentDidMount() {
-    axios.get(`http://localhost:3000/games/${ this.props.match.params.id }`) .then((response) => {
+    axios.get(`http://localhost:3000/games/${ this.props.match.params.id }`).then((response) => {
       let data = response.data  
       return data
     })
@@ -82,9 +84,27 @@ gameStatus = (game) => {
 
   
 
-  handleQuestionStatusChange = (e) => {
+  handleQuestionStatusChange = (id,e) => {
+    const value = e.target.value
+    axios.put(`http://localhost:3000/questions/${ id }.json`, { question: { status: value }}).then((response) => {
+      let data = response.data.question
+      // items[3] = data, => items[items.findIndex((item) => { item.id === data.id)] = data }
+      const questions = this.state.questions
+      questions.map((question,index) => {
+        if (question.id === data.id) {
+        questions[index] = data
+        }
+      })
+      // questions.map(question => question.id)
+      this.setState({
+        questions: questions
+      })
+    })
+  }
+
+  handleNewQuestionStatusChange = (e) => {
     this.setState({
-      questionStatusInput: e.target.value
+      questionNewStatusInput: e.target.value
     });
   }
 
@@ -96,6 +116,7 @@ gameStatus = (game) => {
     
   loadQuestions = () => {
   const questions = this.state.questions
+
   
     return questions.map(question => {
       if (question.is_active) {
@@ -105,9 +126,10 @@ gameStatus = (game) => {
               { question.description }
             </td>
             <td style={{ textAlign: "center" }}>
-              <select id="status-select-existing" placeholder=">Select game status" onChange={ this.handleQuestionStatusChange } style={{ width: "150px" }}>
-                <option value="0">Pending</option>
-                <option value="1">Complete</option>
+              <select id="status-select-existing" value={ question.status } onChange={ (e) => this.handleQuestionStatusChange(question.id,e) } style={{ width: "150px" }}>
+                {/* Could add status and map over for available options, hardcoded for now */}
+                <option value="incomplete">Incomplete</option>
+                <option value="complete">Complete</option>
               </select>
             </td>
             <td style={{ textAlign: "center" }}>
@@ -128,10 +150,10 @@ gameStatus = (game) => {
         <textarea type="text" placeholder="Question Description" value={ this.state.questionDescriptionInput } onChange={ this.handleQuestionDescriptionChange }/>
       </td>
       <td style={{ textAlign: "center"}}>
-        <select id="status-select-add" value={ this.state.questionStatusInput } onChange={ this.handleQuestionStatusChange } style={{ width: "150px" }}>
+        <select id="status-select-add" value={ this.state.questionNewStatusInput } onChange={ this.handleNewQuestionStatusChange } style={{ width: "150px" }}>
           <option value="default" disabled>- Select a status -</option>
-          <option value="0">Pending</option>
-          <option value="1">Complete</option>
+          <option value="pending">Pending</option>
+          <option value="complete">Complete</option>
         </select>
       </td>
       <td style={{ textAlign: "center" }}>
@@ -143,10 +165,27 @@ gameStatus = (game) => {
     )
   }
 
+  updateStatus = (id,e) => {
+    axios.put(`http://localhost:3000/questions/${ id }.json`, { question: { status: e }}).then((response) => {
+      let data = response.data.question
+      // items[3] = data, => items[items.findIndex((item) => { item.id === data.id)] = data }
+      const questions = this.state.questions
+      questions.map((question,index) => {
+        if (question.id === data.id) {
+        questions[index] = data
+        }
+      })
+      // questions.map(question => question.id)
+      this.setState({
+        questions: questions
+      })
+    })
+
+  }
+  
   inactivateQuestion = (id) => {
     axios.put(`http://localhost:3000/questions/${ id }.json`, { question: { is_active: 0 }}).then((response) => {
       let data = response.data.question
-      console.log("data = ", data)
       // items[3] = data, => items[items.findIndex((item) => { item.id === data.id)] = data }
       const questions = this.state.questions
       questions.map((question,index) => {
@@ -165,7 +204,7 @@ gameStatus = (game) => {
     const questionArr = this.state.questions
     const editQuestion = {
       description: this.state.questionDescriptionInput,
-      status: this.state.questionStatusInput
+      status: this.state.questionNewStatusInput
     }
     
     if (editQuestion.description.length > 0 && editQuestion.description.length > 0) {
