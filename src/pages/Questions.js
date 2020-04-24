@@ -17,6 +17,23 @@ class Questions extends Component {
     }
   }
 
+  addQuestions = () => {
+    return (
+    <tr>
+      <td>
+        <textarea type="text" placeholder="Question Description" value={ this.props.questionDescriptionInput } onChange={ this.props.handleQuestionDescriptionChangeFunc }/>
+      </td>
+      <td style={{ textAlign: "center"}}>
+        <select id="status-select-add" value={ this.props.questionNewStatusInput } onChange={ this.handleNewQuestionStatusChangeFunc } style={{ width: "150px" }}>
+          <option value="default" disabled>- Select a status -</option>
+          <option value="pending">Pending</option>
+          <option value="complete">Complete</option>
+        </select>
+      </td>
+    </tr>
+    )
+  }
+
      render() {
       const  {
         loadQuestionsFunc, 
@@ -24,9 +41,6 @@ class Questions extends Component {
       } = this.props
       return ( 
       <div>
-        <h3>
-          Questions
-        </h3>
         <Form>
           <Table striped bordered hover size="sm">
             <thead>
@@ -38,7 +52,7 @@ class Questions extends Component {
             </thead>
             <tbody>
               { loadQuestionsFunc() }
-              { addQuestionsFunc }
+              { this.addQuestions }
             </tbody>
           </Table>
         </Form>

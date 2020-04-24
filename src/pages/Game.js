@@ -32,7 +32,8 @@ class Game extends Component {
       questionStatusInput: "",
       questionNewStatusInput: "default",
       statusTargetId: null,
-      statusValue: null
+      statusValue: null,
+      show: false
     }
   }
         
@@ -113,11 +114,16 @@ gameStatus = (game) => {
       questionDescriptionInput: e.target.value,
     });
   }
+
+  handleShow = () => {
+    const show = this.state.show
+      this.setState({
+        show: !show
+      })
+    }
     
   loadQuestions = () => {
   const questions = this.state.questions
-
-  
     return questions.map(question => {
       if (question.is_active) {
         return (
@@ -141,28 +147,6 @@ gameStatus = (game) => {
         ) 
       }
     })
-  }
-
-    addQuestions = () => {
-    return (
-    <tr>
-      <td>
-        <textarea type="text" placeholder="Question Description" value={ this.state.questionDescriptionInput } onChange={ this.handleQuestionDescriptionChange }/>
-      </td>
-      <td style={{ textAlign: "center"}}>
-        <select id="status-select-add" value={ this.state.questionNewStatusInput } onChange={ this.handleNewQuestionStatusChange } style={{ width: "150px" }}>
-          <option value="default" disabled>- Select a status -</option>
-          <option value="pending">Pending</option>
-          <option value="complete">Complete</option>
-        </select>
-      </td>
-      <td style={{ textAlign: "center" }}>
-        <Button variant="success" onClick={ this.handleQuestionAdd }>
-          + 
-        </Button>
-      </td>
-    </tr>
-    )
   }
 
   updateStatus = (id,e) => {
@@ -226,20 +210,17 @@ gameStatus = (game) => {
     }
   }
 
-
-  
   clearQuestionChanges = () => {
     this.setState({
       questionDescriptionInput: "",
       questionStatusInput: "",
       newQuestions: []
     },
-
-      console.log(this.state.newQuestions)
-    )}
+    this.handleShow()
+  )}
 
   render() {
-    const { game, questions, newQuestions, questionDescriptionInput, questionStatusInput} = this.state
+    const { game, questions, newQuestions, questionDescriptionInput, questionNewStatusInput } = this.state
     return (
     <div>
       <Navbar bg="dark" variant="dark">
@@ -274,23 +255,33 @@ gameStatus = (game) => {
         </Col>
       </Row>
       <Row>
-        <Col md={{ span: 4, offset: 1}}>
-          <Col md={10}>
+          <Col md={{ span: 4, offset: 2 }}>
+              <h3>Questions</h3>
+              <Button size="lg" variant="success" onClick={ this.handleShow }>
+                  +
+              </Button>
+              { game && <Questions
+                handleSaveQuestionFunc={ this.handleSaveQuestion }
+                gameId={game.id} 
+                questions={ questions }
+                newQuestions = { newQuestions }
+                handleClearQuestionChangesFunc={ this.clearQuestionChanges }
+                clearQuestionChangesFunc={ this.clearQuestionChanges }
+                loadQuestionsFunc={ this.loadQuestions }
+                questionDescriptionInput={ questionDescriptionInput }
+                handeQuestionDescriptionChangeFunc={ this.handleQuestionDescriptionChange }
+                questionNewStatusInput={ questionNewStatusInput }
+                handleNewQuestionStatusChangeFunc={ this.handleNewQuestionStatusChange }
+                handleQuestionAddFunc={ this.handleQuestionAdd }
+              />}
           </Col>
-          { game && <Questions
-            handleSaveQuestionFunc={ this.handleSaveQuestion }
-            gameId={game.id} 
-            questions={ questions }
-            newQuestions = { newQuestions }
-            handleClearQuestionChangesFunc={ this.clearQuestionChanges }
-            clearQuestionChangesFunc={ this.clearQuestionChanges }
-            loadQuestionsFunc={ this.loadQuestions }
-            addQuestionsFunc={ this.addQuestions() }
-          />}
-        </Col>
-        <Col md={{ span: 4, offset: 2 }}>
-          { game && <Winners winnerList={ game.cards }/> }
-        </Col>
+          <Col md={{ span: 4 }}>
+          <h3>Winner</h3>
+              <Button size="lg" variant="success" onClick={ this.handleShow }>
+                  +
+              </Button>
+            { game && <Winners winnerList={ game.cards }/> }
+          </Col>
       </Row>
       <Row>
         <Col md={{ span: 10, offset: 1}}>
