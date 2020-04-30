@@ -24,9 +24,9 @@ class Questions extends Component {
         <textarea type="text" placeholder="Question Description" value={ this.props.questionDescriptionInput } onChange={ this.props.handleQuestionDescriptionChangeFunc }/>
       </td>
       <td style={{ textAlign: "center"}}>
-        <select id="status-select-add" value={ this.props.questionNewStatusInput } onChange={ this.handleNewQuestionStatusChangeFunc } style={{ width: "150px" }}>
-          <option value="default" disabled>- Select a status -</option>
-          <option value="pending">Pending</option>
+        <select id="status-select-add"  defaultValue={ "default" } onChange={ this.props.handleNewQuestionStatusChangeFunc } style={{ width: "150px" }}>
+          <option value="default" disabled >Select a status</option>
+          <option value="incomplete">Incomplete</option>
           <option value="complete">Complete</option>
         </select>
       </td>
@@ -34,29 +34,39 @@ class Questions extends Component {
     )
   }
 
-     render() {
-      const  {
-        loadQuestionsFunc, 
-        addQuestionsFunc
-      } = this.props
-      return ( 
+    render() {
+    return ( 
       <div>
-        <Form>
-          <Table striped bordered hover size="sm">
-            <thead>
-              <tr>
-                <th>Question</th>
-                <th>Status</th>
-                <th>Add/Remove</th>
-              </tr>
-            </thead>
-            <tbody>
-              { loadQuestionsFunc() }
-              { this.addQuestions }
-            </tbody>
-          </Table>
-        </Form>
-       </div>
+        <Modal show={ this.props.show } backdrop="static" onHide={ this.props.handleShowFunc }>
+          <Modal.Header closeButton>
+            <Modal.Title>New Question</Modal.Title>
+          </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Table striped bordered hover size="sm">
+                  <thead>
+                    <tr>
+                      <th>Question</th>
+                      <th>Status</th> 
+                    </tr>
+                  </thead>
+                  <tbody>
+                    { this.addQuestions()  }
+                  </tbody>
+                </Table>
+              </Form>
+            </Modal.Body>
+          <Modal.Footer>
+            <Button>
+              
+            </Button>
+
+            <Button variant="primary" onClick={ this.props.handleQuestionAddFunc }>
+              Save question
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
     );
   }
 }

@@ -14,6 +14,7 @@ import moment from 'moment';
 import gameObject from './gameObject'
 import Alert from 'react-bootstrap/Alert'
 import { Button } from 'react-bootstrap'
+
 import axios from 'axios'
 
 
@@ -30,7 +31,7 @@ class Game extends Component {
       players: null,
       questionDescriptionInput: "",
       questionStatusInput: "",
-      questionNewStatusInput: "default",
+      questionNewStatusInput: "",
       statusTargetId: null,
       statusValue: null,
       show: false
@@ -49,6 +50,7 @@ class Game extends Component {
         players: data.game.players,
         questions: data.game.questions
       });
+      console.log(this.state.game)
     });
   }
    
@@ -107,12 +109,14 @@ gameStatus = (game) => {
     this.setState({
       questionNewStatusInput: e.target.value
     });
+    console.log(this.state.questionNewStatusInput)
   }
 
   handleQuestionDescriptionChange = (e) => {
     this.setState({
       questionDescriptionInput: e.target.value,
     });
+    console.log(this.state.questionDescriptionInput)
   }
 
   handleShow = () => {
@@ -120,6 +124,7 @@ gameStatus = (game) => {
       this.setState({
         show: !show
       })
+      console.log(this.state.show)
     }
     
   loadQuestions = () => {
@@ -132,7 +137,7 @@ gameStatus = (game) => {
               { question.description }
             </td>
             <td style={{ textAlign: "center" }}>
-              <select id="status-select-existing" value={ question.status } onChange={ (e) => this.handleQuestionStatusChange(question.id,e) } style={{ width: "150px" }}>
+              <select id="status-select-existing" defaultValue={ question.status } onChange={ (e) => this.handleQuestionStatusChange(question.id,e) } style={{ width: "100px" }}>
                 {/* Could add status and map over for available options, hardcoded for now */}
                 <option value="incomplete">Incomplete</option>
                 <option value="complete">Complete</option>
@@ -144,10 +149,10 @@ gameStatus = (game) => {
               </Button>
             </td>
           </tr>
-        ) 
+        )
       }
     })
-  }
+  } 
 
   updateStatus = (id,e) => {
     axios.put(`http://localhost:3000/questions/${ id }.json`, { question: { status: e }}).then((response) => {
@@ -187,14 +192,14 @@ gameStatus = (game) => {
   handleQuestionAdd = () => {
     const questionArr = this.state.questions
     const editQuestion = {
+      gameId: this.state.game.id,
       description: this.state.questionDescriptionInput,
       status: this.state.questionNewStatusInput
     }
     
-    if (editQuestion.description.length > 0 && editQuestion.description.length > 0) {
-    axios.post("http://localhost:3000/questions", { question: { game_id: this.state.game.id, description: editQuestion.description, status: this.state.questionStatusInput, is_active: 1 }}).then((response) => {
+    if ( editQuestion.description.length > 0 ) {
+    axios.post("http://localhost:3000/questions", {question: {game_id: editQuestion.gameId, description: editQuestion.description, status: editQuestion.status, is_active: 1 }}).then((response) => {
       let data = response.data.question
-      console.log(data)
       return data
     })
     .then((data) => {
@@ -202,12 +207,14 @@ gameStatus = (game) => {
       this.setState({
         questions: questionArr,
         questionDescriptionInput: "",
-        questionStatusInput: ""
+        questionNewStatusInput: ""
       });
     });
+    this.handleShow()
     } else {
       window.alert("Question text cannot be empty")
     }
+    console.log(this.state.questionDescriptionInput, this.state.questionNewStatusInput)
   }
 
   clearQuestionChanges = () => {
@@ -220,6 +227,7 @@ gameStatus = (game) => {
   )}
 
   render() {
+    console.log(this.state.show)
     const { game, questions, newQuestions, questionDescriptionInput, questionNewStatusInput } = this.state
     return (
     <div>
@@ -227,7 +235,7 @@ gameStatus = (game) => {
         <Navbar.Brand href="#home">Navbar</Navbar.Brand>
       </Navbar>
       <Row>
-        <Col md={{ span: 8, offset: 2}}>
+        <Col md={{ span: 10, offset: 1}}>
           <Jumbotron style={{ marginTop: 10, paddingTop: 10, paddingRight: 20 }}>
             <Row>
               <Col md={{ span: 1, offset: 11}}>
@@ -255,31 +263,56 @@ gameStatus = (game) => {
         </Col>
       </Row>
       <Row>
-          <Col md={{ span: 4, offset: 2 }}>
-              <h3>Questions</h3>
-              <Button size="lg" variant="success" onClick={ this.handleShow }>
-                  +
-              </Button>
-              { game && <Questions
+          <Col md={{ span: 5, offset: 1 }}>
+            <Row>
+              <Col md={{ span: 4}}>
+                <h3>Questions</h3>
+              </Col>
+              <Col md={{ span: 1, offset: 7}}>
+                <Button variant="success" className="float-right" onClick={ this.handleShow }>
+                    +
+                </Button>
+              </Col>
+            </Row>
+            { game && <Questions
+                show={ this.state.show }
+                handleShowFunc={ this.handleShow }
                 handleSaveQuestionFunc={ this.handleSaveQuestion }
                 gameId={game.id} 
                 questions={ questions }
                 newQuestions = { newQuestions }
                 handleClearQuestionChangesFunc={ this.clearQuestionChanges }
                 clearQuestionChangesFunc={ this.clearQuestionChanges }
-                loadQuestionsFunc={ this.loadQuestions }
                 questionDescriptionInput={ questionDescriptionInput }
-                handeQuestionDescriptionChangeFunc={ this.handleQuestionDescriptionChange }
+                handleQuestionDescriptionChangeFunc={ this.handleQuestionDescriptionChange }
                 questionNewStatusInput={ questionNewStatusInput }
                 handleNewQuestionStatusChangeFunc={ this.handleNewQuestionStatusChange }
                 handleQuestionAddFunc={ this.handleQuestionAdd }
               />}
+              <Table striped bordered hover size="sm">
+                <thead>
+                  <tr>
+                    <th>Question</th>
+                    <th>Status</th>
+                    <th>Edit</th> 
+                  </tr>
+                </thead>
+                <tbody>
+                  { game && this.loadQuestions() }
+                </tbody>
+              </Table>
           </Col>
-          <Col md={{ span: 4 }}>
-          <h3>Winner</h3>
-              <Button size="lg" variant="success" onClick={ this.handleShow }>
-                  +
-              </Button>
+          <Col md={{ span: 5 }}>
+            <Row>
+                <Col md={{ span: 4}}>
+                  <h3>Winners</h3>
+                </Col>
+                <Col md={{ span: 1, offset: 7}} >
+                  <Button variant="success" className="float-right" onClick={ this.handleShow }>
+                      +
+                  </Button>
+                </Col>
+              </Row>
             { game && <Winners winnerList={ game.cards }/> }
           </Col>
       </Row>
