@@ -14,27 +14,25 @@ import moment from 'moment';
 import gameObject from './gameObject'
 import Alert from 'react-bootstrap/Alert'
 import { Button } from 'react-bootstrap'
-
 import axios from 'axios'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit } from '@fortawesome/free-solid-svg-icons'
 
 
 
 class Game extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = { 
       game: null,
       gameDetails: null,
       questions: null,
-      newQuestions: [],
+      newQuestionArr: [],
       winners: null,
       players: null,
-      questionDescriptionInput: "",
-      questionStatusInput: "",
-      questionNewStatusInput: "",
       statusTargetId: null,
       statusValue: null,
-      show: false
+      show: false,
     }
   }
         
@@ -50,7 +48,6 @@ class Game extends Component {
         players: data.game.players,
         questions: data.game.questions
       });
-      console.log(this.state.game)
     });
   }
    
@@ -109,14 +106,6 @@ gameStatus = (game) => {
     this.setState({
       questionNewStatusInput: e.target.value
     });
-    console.log(this.state.questionNewStatusInput)
-  }
-
-  handleQuestionDescriptionChange = (e) => {
-    this.setState({
-      questionDescriptionInput: e.target.value,
-    });
-    console.log(this.state.questionDescriptionInput)
   }
 
   handleShow = () => {
@@ -124,7 +113,6 @@ gameStatus = (game) => {
       this.setState({
         show: !show
       })
-      console.log(this.state.show)
     }
     
   loadQuestions = () => {
@@ -145,7 +133,7 @@ gameStatus = (game) => {
             </td>
             <td style={{ textAlign: "center" }}>
               <Button size="sm" variant="danger" style = {{ marginLeft: 5, marginRight: 5  }} onClick={ () => { this.inactivateQuestion(question.id) } }>
-                -
+                <FontAwesomeIcon icon={faEdit} />
               </Button>
             </td>
           </tr>
@@ -169,7 +157,6 @@ gameStatus = (game) => {
         questions: questions
       })
     })
-
   }
   
   inactivateQuestion = (id) => {
@@ -190,26 +177,26 @@ gameStatus = (game) => {
   }
 
   handleQuestionAdd = () => {
+    const newQuestionArr = this.state.newQuestionArr
     const questionArr = this.state.questions
-    const editQuestion = {
-      gameId: this.state.game.id,
-      description: this.state.questionDescriptionInput,
-      status: this.state.questionNewStatusInput
-    }
-    
-    if ( editQuestion.description.length > 0 ) {
-    axios.post("http://localhost:3000/questions", {question: {game_id: editQuestion.gameId, description: editQuestion.description, status: editQuestion.status, is_active: 1 }}).then((response) => {
-      let data = response.data.question
-      return data
-    })
-    .then((data) => {
-      questionArr.push(data)
-      this.setState({
-        questions: questionArr,
-        questionDescriptionInput: "",
-        questionNewStatusInput: ""
-      });
-    });
+    console.log(newQuestionArr)
+    if ( newQuestionArr.length > 0 ) {
+      newQuestionArr.map(question => {
+        axios.post("http://localhost:3000/questions", 
+          { question: {game_id: question.gameId, description: question.description, status: 1, is_active: 1, 
+            selections_attributes: [{text: question.selections.text, is_right: question.selections.is_right }]}
+          }).then((response) => {
+          let data = response.data.question
+          return data
+        })
+        .then((data) => {
+          questionArr.push(data)
+          this.setState({
+            questions: questionArr,
+            newQuestionArr: []
+          });
+        });
+      })
     this.handleShow()
     } else {
       window.alert("Question text cannot be empty")
@@ -217,18 +204,8 @@ gameStatus = (game) => {
     console.log(this.state.questionDescriptionInput, this.state.questionNewStatusInput)
   }
 
-  clearQuestionChanges = () => {
-    this.setState({
-      questionDescriptionInput: "",
-      questionStatusInput: "",
-      newQuestions: []
-    },
-    this.handleShow()
-  )}
-
   render() {
-    console.log(this.state.show)
-    const { game, questions, newQuestions, questionDescriptionInput, questionNewStatusInput } = this.state
+    const { game, questions, newQuestions, questionDescriptionInput, questionNewStatusInput, selectionTextInput, selectionsArray } = this.state
     return (
     <div>
       <Navbar bg="dark" variant="dark">
@@ -266,7 +243,11 @@ gameStatus = (game) => {
           <Col md={{ span: 5, offset: 1 }}>
             <Row>
               <Col md={{ span: 4}}>
-                <h3>Questions</h3>
+                <h3>Questions 
+                <Badge variant="light" style={{ margin: 3 }} >
+                   { game && questions.length }
+                </Badge>
+                </h3>
               </Col>
               <Col md={{ span: 1, offset: 7}}>
                 <Button variant="success" className="float-right" onClick={ this.handleShow }>
@@ -281,13 +262,8 @@ gameStatus = (game) => {
                 gameId={game.id} 
                 questions={ questions }
                 newQuestions = { newQuestions }
-                handleClearQuestionChangesFunc={ this.clearQuestionChanges }
-                clearQuestionChangesFunc={ this.clearQuestionChanges }
-                questionDescriptionInput={ questionDescriptionInput }
-                handleQuestionDescriptionChangeFunc={ this.handleQuestionDescriptionChange }
-                questionNewStatusInput={ questionNewStatusInput }
-                handleNewQuestionStatusChangeFunc={ this.handleNewQuestionStatusChange }
                 handleQuestionAddFunc={ this.handleQuestionAdd }
+                newQuestionArr = { this.state.newQuestionArr}
               />}
               <Table striped bordered hover size="sm">
                 <thead>
@@ -309,7 +285,7 @@ gameStatus = (game) => {
                 </Col>
                 <Col md={{ span: 1, offset: 7}} >
                   <Button variant="success" className="float-right" onClick={ this.handleShow }>
-                      +
+                    +
                   </Button>
                 </Col>
               </Row>

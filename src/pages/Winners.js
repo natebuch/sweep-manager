@@ -3,11 +3,13 @@ import { Table } from 'react-bootstrap'
 import { Button } from 'react-bootstrap'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
+import Badge from 'react-bootstrap/Badge'
 
 class Winners extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      prevWinners: []
     }
   }
 
@@ -43,7 +45,7 @@ class Winners extends Component {
 
   loadPrevWinners = () => {
     const { winnerList } = this.props
-    const prevWinnerList = []
+    const prevWinnerList = this.state.prevWinners
     
     winnerList.map(prevWinner => { 
       if (prevWinner.sweep === 0 ) {
@@ -51,7 +53,9 @@ class Winners extends Component {
       }
     })
 
-    return prevWinnerList.map(winner => {   
+     
+    
+    prevWinnerList.map(winner => {   
       return (
         <tr key={ winner.winner_id }>
           <td>
@@ -67,8 +71,15 @@ class Winners extends Component {
             { winner.winner_address}
           </td>
         </tr>
-      )   
+      )  
     })
+
+    this.setState({ 
+      prevWinners: prevWinnerList
+    })
+
+
+
   }
   
   
@@ -91,7 +102,10 @@ class Winners extends Component {
             </tbody>
           </Table> 
           <h3>
-           Previous Game Winners
+           Previous Game Winners 
+           <Badge variant="light" style={{ margin: 3 }} >
+             { this.state.prevWinners.length }
+           </Badge>
           </h3>
           <Table striped bordered hover>
           <thead>
@@ -103,7 +117,7 @@ class Winners extends Component {
               </tr>
             </thead>
             <tbody>
-              { this.loadPrevWinners() }
+              { this.loadPrevWinners }
             </tbody>
           </Table>      
         </div>

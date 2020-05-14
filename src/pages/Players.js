@@ -3,6 +3,7 @@ import { Table } from 'react-bootstrap'
 import { Button } from 'react-bootstrap'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
+import Badge from 'react-bootstrap/Badge'
 
 
 
@@ -33,6 +34,9 @@ class Players extends Component {
       <div>
         <h3>
           Player List
+          <Badge variant="light" style={{ margin: 3 }} >
+            { this.props.playerList.length }
+          </Badge>
         </h3>
           <Table size="sm" striped bordered hover>
             <thead>
