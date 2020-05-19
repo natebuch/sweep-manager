@@ -18,6 +18,10 @@ import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 
+const newQuestionObject = []
+
+const selectionAttributes = []
+  
 
 
 class Game extends Component {
@@ -46,7 +50,7 @@ class Game extends Component {
         game: data.game,
         winners: data.game.cards.winners,
         players: data.game.players,
-        questions: data.game.questions
+        questions: data.game.questions,
       });
     });
   }
@@ -176,36 +180,36 @@ gameStatus = (game) => {
     }) 
   }
 
+  saveQuestion = (question, questionArr) => {
+    axios.post("http://localhost:3000/questions", {game_id: question.game_id, description: question.description, is_active: 1, status: 1, selections_attributes: question.selections}).then((response) => {
+      let data = response.data.question
+      console.log(response)
+      return data
+    })
+    .then((data) => {
+      questionArr.push(data)
+      console.log(questionArr)
+    })
+  }
+
   handleQuestionAdd = () => {
     const newQuestionArr = this.state.newQuestionArr
     const questionArr = this.state.questions
-    console.log(newQuestionArr)
     if ( newQuestionArr.length > 0 ) {
       newQuestionArr.map(question => {
-        axios.post("http://localhost:3000/questions", 
-          { question: {game_id: question.gameId, description: question.description, status: 1, is_active: 1, 
-            selections_attributes: [{text: question.selections.text, is_right: question.selections.is_right }]}
-          }).then((response) => {
-          let data = response.data.question
-          return data
-        })
-        .then((data) => {
-          questionArr.push(data)
-          this.setState({
-            questions: questionArr,
-            newQuestionArr: []
-          });
-        });
+        this.saveQuestion(question,questionArr,newQuestionArr)
       })
-    this.handleShow()
     } else {
-      window.alert("Question text cannot be empty")
+      window.alert("Questions be must exist")
     }
-    console.log(this.state.questionDescriptionInput, this.state.questionNewStatusInput)
+    this.setState({
+      questions: questionArr,
+      newQuestionArr: []
+    })
   }
 
   render() {
-    const { game, questions, newQuestions, questionDescriptionInput, questionNewStatusInput, selectionTextInput, selectionsArray } = this.state
+    const { game, questions, newQuestions} = this.state
     return (
     <div>
       <Navbar bg="dark" variant="dark">

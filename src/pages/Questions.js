@@ -56,11 +56,14 @@ class Questions extends Component {
       text: this.state.selectionTextInput,
       is_right: this.state.checked
     }
+    if (selection.text.length > 0) {
     selections.push(selection)
     this.setState({
       selectionList: selections
     })
     this.clearSelectionChanges()
+    } else {window.alert("Selection text cannot be empty.")
+    }
   }
 
   exitQuestionChanges = () => {
@@ -113,15 +116,17 @@ class Questions extends Component {
     const question = {
       game_id: this.props.gameId,
       description: this.state.questionDescriptionInput,
+      is_active: 1,
+      status: 1,
       selections: this.state.selectionList,
-      status: this.state.questionNewStatusInput
     }
     if ( question.description.length > 0 && question.selections.length > 0) {
       questionArr.push(question)
       this.setState({
         addQuestionArr: questionArr
       })
-      this.clearQuestionChanges()   
+     
+      this.clearQuestionChanges()    
     } else {
       window.alert("Question text cannot be empty / You do not have any selections")
     }
@@ -250,7 +255,7 @@ class Questions extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Col>
-              <Button variant="primary" onClick={ this.props.handleQuestionAddFunc }>
+              <Button variant="primary" onClick={ () => { this.props.handleQuestionAddFunc(); this.exitQuestionChanges() }} >
                 Save questions
               </Button>
             </Col>
