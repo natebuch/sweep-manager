@@ -37,6 +37,7 @@ class Game extends Component {
       statusTargetId: null,
       statusValue: null,
       show: false,
+      newSet: []
     }
   }
         
@@ -50,7 +51,7 @@ class Game extends Component {
         game: data.game,
         winners: data.game.cards.winners,
         players: data.game.players,
-        questions: data.game.questions,
+        questions: data.game.questions
       });
     });
   }
@@ -120,11 +121,12 @@ gameStatus = (game) => {
     }
     
   loadQuestions = () => {
+    // console.log('render questions length', this.state.questions.length)
   const questions = this.state.questions
-    return questions.map(question => {
+    return questions.map((question, index) => {
       if (question.is_active) {
         return (
-          <tr key={ question.id }>
+          <tr key={ index }>
             <td>
               { question.description }
             </td>
@@ -180,36 +182,43 @@ gameStatus = (game) => {
     }) 
   }
 
-  saveQuestion = (question, questionArr) => {
-    axios.post("http://localhost:3000/questions", {game_id: question.game_id, description: question.description, is_active: 1, status: 1, selections_attributes: question.selections}).then((response) => {
-      let data = response.data.question
-      console.log(response)
-      return data
-    })
-    .then((data) => {
-      questionArr.push(data)
-      console.log(questionArr)
-    })
-  }
+  // saveQuestion = (question) => {
+  //   let original_questions = Object.assign([], this.state.questions)
+  //   let newSet = this.state.newSet
+  //   let concatSet = original_questions.concat(newSet)
+  //   axios.post("http://localhost:3000/questions", {game_id: question.game_id, description: question.description, is_active: 1, status: 1, selections_attributes: question.selections}).then((response) => {
+  //     let data = response.data.question 
+  //     console.log('success', data)
+  //     newSet.push(data)
+  //   })
+      
+  //   this.setState({
+  //     questions: Object.assign([],concatSet)
+  //   })
+  // }
 
   handleQuestionAdd = () => {
-    const newQuestionArr = this.state.newQuestionArr
-    const questionArr = this.state.questions
-    if ( newQuestionArr.length > 0 ) {
-      newQuestionArr.map(question => {
-        this.saveQuestion(question,questionArr,newQuestionArr)
+    let newQuestions = []
+    let questions = Object.assign([],this.state.questions)
+    let newArr = Object.assign([],this.state.newQuestionArr)
+    newArr.map((question) => {
+      axios.post("http://localhost:3000/questions", {question: question}).then((response) => {
+        let data = response.data.question
+        console.log(data)
+        newQuestions.push({id: 207, game_id: 1, description: "4", status: "complete", is_active: true, selections: {question_id: 207, text: "4", is_right: false}})
       })
-    } else {
-      window.alert("Questions be must exist")
-    }
-    this.setState({
-      questions: questionArr,
-      newQuestionArr: []
     })
+    this.setState({
+      newQuestionArr: [],
+      questions: questions.concat(newQuestions)
+    })
+    console.log(this.state.show)
   }
 
   render() {
     const { game, questions, newQuestions} = this.state
+    // console.log('questions length', questions)
+    console.log(this.state.show)
     return (
     <div>
       <Navbar bg="dark" variant="dark">

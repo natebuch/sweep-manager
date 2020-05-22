@@ -118,9 +118,9 @@ class Questions extends Component {
       description: this.state.questionDescriptionInput,
       is_active: 1,
       status: 1,
-      selections: this.state.selectionList,
+      selections_attributes: this.state.selectionList,
     }
-    if ( question.description.length > 0 && question.selections.length > 0) {
+    if ( question.description.length > 0 && question.selections_attributes.length > 0) {
       questionArr.push(question)
       this.setState({
         addQuestionArr: questionArr
@@ -170,7 +170,7 @@ class Questions extends Component {
             </Card.Header>
               <Card.Body>
                 <ListGroup>
-                  { question.selections.map((selection,index) => {
+                  { question.selections_attributes.map((selection,index) => {
                     return (
                       <ListGroup.Item variant={ selection.is_right ? "success" : "" } key={ index }>
                         <Row>
@@ -241,6 +241,11 @@ class Questions extends Component {
     console.log("asdf")
   }
 
+  saveAddQuestions = () => {
+    this.exitQuestionChanges()
+    this.props.handleQuestionAddFunc()
+  }
+
     render() {
     return ( 
       <div>
@@ -255,7 +260,7 @@ class Questions extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Col>
-              <Button variant="primary" onClick={ () => { this.props.handleQuestionAddFunc(); this.exitQuestionChanges() }} >
+              <Button variant="primary" onClick={ this.saveAddQuestions } >
                 Save questions
               </Button>
             </Col>
