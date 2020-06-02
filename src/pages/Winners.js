@@ -16,13 +16,11 @@ class Winners extends Component {
   loadWinners = () => {
     const { winnerList } = this.props
     const winnerListing = []
-    
     winnerList.map(winner => { 
       if (winner.sweep === 1 ) {
         winnerListing.push(winner)
       }
     })
-
     return winnerListing.map(winner => {   
       return (
         <tr key={ winner.winner_id }>
@@ -42,48 +40,44 @@ class Winners extends Component {
       )   
     })
   }
-
-  loadPrevWinners = () => {
+ 
+  getWinners = () => {
     const { winnerList } = this.props
     const prevWinnerList = this.state.prevWinners
-    
     winnerList.map(prevWinner => { 
       if (prevWinner.sweep === 0 ) {
         prevWinnerList.push(prevWinner)
       }
     })
-
-     
-    
-    prevWinnerList.map(winner => {   
-      return (
-        <tr key={ winner.winner_id }>
-          <td>
-            { winner.winner_id}
-          </td>
-          <td>
-            { winner.winner_first_name}
-          </td>
-          <td>
-            { winner.winner_last_name}
-          </td>
-          <td>
-            { winner.winner_address}
-          </td>
-        </tr>
-      )  
-    })
-
     this.setState({ 
       prevWinners: prevWinnerList
     })
+  }
 
-
-
+  loadPrevWinners = () => {
+    const { winnerList } = this.props
+    const prevWinnerListing = []
+    winnerList.map(winner => {
+      if (winnerList.sweep === 1 && winnerList)   
+    return (
+      <tr key={ winner.winner_id }>
+        <td>
+          { winner.winner_id}
+        </td>
+        <td>
+          { winner.winner_first_name}
+        </td>
+        <td>
+          { winner.winner_last_name}
+        </td>
+        <td>
+          { winner.winner_address}
+        </td>
+      </tr>
+      )  
+    })
   }
   
-  
-
   render() { 
     const { winnerList } = this.props
       return (
@@ -102,10 +96,10 @@ class Winners extends Component {
             </tbody>
           </Table> 
           <h3>
-           Previous Game Winners 
-           <Badge variant="light" style={{ margin: 3 }} >
-             { this.state.prevWinners.length }
-           </Badge>
+            Previous Game Winners 
+            <Badge variant="light" style={{ margin: 3 }} >
+              { this.state.prevWinners.length }
+            </Badge>
           </h3>
           <Table striped bordered hover>
           <thead>
@@ -117,12 +111,12 @@ class Winners extends Component {
               </tr>
             </thead>
             <tbody>
-              { this.loadPrevWinners }
+              { this.loadPrevWinners() }
             </tbody>
           </Table>      
         </div>
       )
     }
-  }
+}
  
 export default Winners;

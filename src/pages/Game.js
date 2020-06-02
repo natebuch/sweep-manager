@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row'
 import Badge from 'react-bootstrap/Badge'
 import Navbar from 'react-bootstrap/Navbar'
 import Questions from './Questions'
+import QuestionEdit from './QuestionEdit'
 import Winners from './Winners'
 import WinnerEdit from './WinnerEdit'
 import Players from './Players'
@@ -17,12 +18,6 @@ import { Button } from 'react-bootstrap'
 import axios from 'axios'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
-
-const newQuestionObject = []
-
-const selectionAttributes = []
-  
-
 
 class Game extends Component {
   constructor(props) {
@@ -37,7 +32,9 @@ class Game extends Component {
       statusTargetId: null,
       statusValue: null,
       show: false,
-      newSet: []
+      showEdit: false,
+      newSet: [],
+      editQuestionId: null
     }
   }
         
@@ -119,6 +116,14 @@ gameStatus = (game) => {
         show: !show
       })
     }
+
+    handleShowEdit = () => {
+      const show = this.state.showEdit
+      console.log()
+      this.setState({
+        showEdit: !show
+      })
+    }
     
   loadQuestions = () => {
     // console.log('render questions length', this.state.questions.length)
@@ -126,7 +131,7 @@ gameStatus = (game) => {
     return questions.map((question, index) => {
       if (question.is_active) {
         return (
-          <tr key={ index }>
+          <tr key={ index }>  
             <td>
               { question.description }
             </td>
@@ -138,8 +143,15 @@ gameStatus = (game) => {
               </select>
             </td>
             <td style={{ textAlign: "center" }}>
-              <Button size="sm" variant="danger" style = {{ marginLeft: 5, marginRight: 5  }} onClick={ () => { this.inactivateQuestion(question.id) } }>
+              <Button size="sm" variant="danger" style = {{ marginLeft: 5, marginRight: 5  }} onClick={ () => this.handleShowEdit(question) }>
                 <FontAwesomeIcon icon={faEdit} />
+                <QuestionEdit 
+                  key={ index }
+                  showEdit={ this.state.showEdit }
+                  question={ question }
+                  handleShowEditFunc={ this.handleShowEdit }
+                  inactivateQuestionFunc={ this.inactivateQuestion }
+                /> 
               </Button>
             </td>
           </tr>
@@ -198,27 +210,35 @@ gameStatus = (game) => {
   // }
 
   handleQuestionAdd = () => {
-    let newQuestions = []
-    let questions = Object.assign([],this.state.questions)
+    console.log("adding question")
     let newArr = Object.assign([],this.state.newQuestionArr)
+    console.log(newArr, 'NewArr')
     newArr.map((question) => {
       axios.post("http://localhost:3000/questions", {question: question}).then((response) => {
         let data = response.data.question
+        let newQuestions = this.state.newSet
         console.log(data)
-        newQuestions.push({id: 207, game_id: 1, description: "4", status: "complete", is_active: true, selections: {question_id: 207, text: "4", is_right: false}})
+        newQuestions.push(data)
+        this.setState( prevState => ({
+          questions: [...prevState.questions, ...newQuestions],
+          newSet: [],
+          newQuestionArr: [] 
+        }))
+        newQuestions.pop()
+            console.log(this.state.newQuestionArr)
       })
     })
-    this.setState({
-      newQuestionArr: [],
-      questions: questions.concat(newQuestions)
-    })
-    console.log(this.state.show)
   }
+
+  handleAddQuestionFromList = (questionArr) => {
+    this.setState( prevState => ({
+      newQuestionArr: [...prevState.newQuestionArr, ...questionArr]
+    }))
+  } 
 
   render() {
     const { game, questions, newQuestions} = this.state
-    // console.log('questions length', questions)
-    console.log(this.state.show)
+    console.log(this.state.showEdit)
     return (
     <div>
       <Navbar bg="dark" variant="dark">
@@ -277,6 +297,7 @@ gameStatus = (game) => {
                 newQuestions = { newQuestions }
                 handleQuestionAddFunc={ this.handleQuestionAdd }
                 newQuestionArr = { this.state.newQuestionArr}
+                handleAddQuestionFromListFunc={ this.handleAddQuestionFromList }
               />}
               <Table striped bordered hover size="sm">
                 <thead>

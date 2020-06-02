@@ -25,6 +25,7 @@ class Questions extends Component {
     }
   }
   
+
   handleChecked = () => {
     const checked = this.state.checked
     this.setState({
@@ -61,22 +62,25 @@ class Questions extends Component {
     this.setState({
       selectionList: selections
     })
+    console.log(this.state.addQuestionArr)
+    console.log(this.props.newQuestionArr)
     this.clearSelectionChanges()
     } else {window.alert("Selection text cannot be empty.")
     }
   }
 
   exitQuestionChanges = () => {
+    console.log(this.state.addQuestionArr)
+    console.log(this.props.newQuestionArr)
     this.setState({
       selectionTextInput: "",
       questionDescriptionInput: "",
       questionStatusInput: "",
-      addQuestionArr: [],
       checked: false,
       selectionList: []
-    },
-    this.props.handleShowFunc
-  )}
+    })
+    this.props.handleShowFunc()  
+  }
 
   clearQuestionChanges = () => {
     this.setState({
@@ -112,7 +116,7 @@ class Questions extends Component {
   }
 
   handleQuestionList = () => {
-    const questionArr = this.state.addQuestionArr
+    const questionArr = []
     const question = {
       game_id: this.props.gameId,
       description: this.state.questionDescriptionInput,
@@ -122,10 +126,9 @@ class Questions extends Component {
     }
     if ( question.description.length > 0 && question.selections_attributes.length > 0) {
       questionArr.push(question)
-      this.setState({
-        addQuestionArr: questionArr
-      })
-     
+      this.props.handleAddQuestionFromListFunc(questionArr)
+      console.log(this.state.addQuestionArr)
+      console.log(this.props.newQuestionArr)
       this.clearQuestionChanges()    
     } else {
       window.alert("Question text cannot be empty / You do not have any selections")
@@ -150,7 +153,7 @@ class Questions extends Component {
   }
 
   listQuestions = () => {
-    const questions = this.state.addQuestionArr
+    const questions = this.props.newQuestionArr
     return (
       questions.map((question,index) => {
         const questionIndex = index
@@ -232,7 +235,7 @@ class Questions extends Component {
             </Col>
           </Row>
           </Col>
-         </Row>
+        </Row>
      </div>
     )
   }
@@ -260,9 +263,11 @@ class Questions extends Component {
           </Modal.Body>
           <Modal.Footer>
             <Col>
+              { this.props.newQuestionArr.length > 0 ? 
               <Button variant="primary" onClick={ this.saveAddQuestions } >
                 Save questions
               </Button>
+              : null }
             </Col>
             <Col>
               <Button variant="success" className="float-right" onClick={ this.handleQuestionList }>
