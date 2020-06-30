@@ -34,7 +34,8 @@ class Game extends Component {
       show: false,
       showEdit: false,
       newSet: [],
-      editQuestionId: null
+      editQuestionId: null,
+      editQuestionSelection: null
     }
   }
         
@@ -117,12 +118,18 @@ gameStatus = (game) => {
       })
     }
 
-    handleShowEdit = () => {
-      const show = this.state.showEdit
-      console.log()
+    handleShowEdit = (question) => {
+      const { showEdit } = this.state
       this.setState({
-        showEdit: !show
+        showEdit: !showEdit,
+        editQuestionSelection: question
       })
+     }
+
+    handleSelectionStatusChange = (selection,question) => {
+      const currentSelection = selection
+      //map through the known selection and swap out selection for wanted at known index
+      
     }
     
   loadQuestions = () => {
@@ -145,13 +152,6 @@ gameStatus = (game) => {
             <td style={{ textAlign: "center" }}>
               <Button size="sm" variant="danger" style = {{ marginLeft: 5, marginRight: 5  }} onClick={ () => this.handleShowEdit(question) }>
                 <FontAwesomeIcon icon={faEdit} />
-                <QuestionEdit 
-                  key={ index }
-                  showEdit={ this.state.showEdit }
-                  question={ question }
-                  handleShowEditFunc={ this.handleShowEdit }
-                  inactivateQuestionFunc={ this.inactivateQuestion }
-                /> 
               </Button>
             </td>
           </tr>
@@ -237,8 +237,8 @@ gameStatus = (game) => {
   } 
 
   render() {
-    const { game, questions, newQuestions} = this.state
-    console.log(this.state.showEdit)
+    const { game, questions, newQuestions } = this.state
+    console.log(this.state.showEdit,this.state.editQuestionSelection)
     return (
     <div>
       <Navbar bg="dark" variant="dark">
@@ -299,6 +299,13 @@ gameStatus = (game) => {
                 newQuestionArr = { this.state.newQuestionArr}
                 handleAddQuestionFromListFunc={ this.handleAddQuestionFromList }
               />}
+              { this.state.question ? <QuestionEdit 
+                showEdit={ this.state.showEdit }
+                question={ this.state.editQuestionSelection }
+                handleShowEditFunc={ this.handleShowEdit }
+                inactivateQuestionFunc={ this.inactivateQuestion }
+                handleSelectionStatusChangeFunc={ this.handleSelectionStatusChange }
+              /> : null }
               <Table striped bordered hover size="sm">
                 <thead>
                   <tr>

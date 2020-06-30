@@ -15,20 +15,16 @@ class QuestionEdit extends Component {
   constructor(props) {
     super(props);
     this.state = {  
-      checked: false,
-      selectionList: this.props.question.selections,
       selectionTextInput: "",
       questionDescriptionInput: "",
       questionStatusInput: "",
-      questionNewStatusInput: ""
+      questionNewStatusInput: "",
+      selectionCorrect: null
     }
   }
 
-  handleChecked = () => {
-    const checked = this.state.checked
-    this.setState({
-      checked: !checked
-    })
+  handleChecked = (selection) => {
+    this.props.handleSelectionStatusChangeFunc(selection)
   }
 
   handleNewQuestionStatusChange = (e) => {
@@ -52,17 +48,18 @@ class QuestionEdit extends Component {
   listSelections = () => {
     const selections = this.props.question.selections
     return (
-      <ListGroup> 
-        { selections.map((selection,index) => {
+      <ListGroup>
+        <Form.Label>Edit Selections</Form.Label> 
+        { selections.map((selection,index,) => {
           return (
             <ListGroup.Item variant={ selection.is_right ? "success" : "" } key={ index }>
-              { selection.text }
+            <Form.Control as="textarea" rows="1" placeholder="Question Text" value={ selection.text } onChange={ this.handleSelectionTextChange }/>
               <Form.Check
                 type="switch"
                 id="custom-switch" 
                 label="correct"
-                checked={ this.state.checked }
-                onChange={ this.handleChecked }
+                checked={ selection.is_right }
+                onChange={ this.handleChecked(selection,this.props.question) }
               />
             </ListGroup.Item>
           )
@@ -114,7 +111,7 @@ class QuestionEdit extends Component {
             <Form.Control as="textarea" rows="1" value={ question.description } onChange={ this.handleQuestionDescriptionChange }/>
           </Form.Group>
         </Col>
-        <Col>
+        <Col md={ 6 }>
           <Row>
             <Col md={ 6 }>
             <Form.Label>Selection</Form.Label>
@@ -137,11 +134,15 @@ class QuestionEdit extends Component {
           <Row>
             <Col>
               <Form.Control as="textarea" rows="1" placeholder="Selection Text" value={ this.state.selectionTextInput } onChange={ this.handleSelectionTextChange }/>
-              { this.listSelections() }
             </Col>
           </Row>
-          </Col>
-        </Row>
+        </Col>
+      </Row>
+      <Row>
+        <Col md={12}>
+          { this.listSelections() }
+        </Col>
+      </Row>
      </div>
     )
   }
@@ -149,7 +150,7 @@ class QuestionEdit extends Component {
 
 
   render() { 
-    console.log(this.state.question)
+  
     return (  
       <Modal size="xl" show={ this.props.showEdit } backdrop="static" onHide={ this.exitQuestionEditChanges }>
           <Modal.Header closeButton>
@@ -157,7 +158,6 @@ class QuestionEdit extends Component {
           </Modal.Header>
           <Modal.Body>
             { this.editQuestion() }
-
           </Modal.Body>
           <Modal.Footer>
             <Col>
